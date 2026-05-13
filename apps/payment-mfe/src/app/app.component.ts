@@ -4,6 +4,7 @@ import {
   computed,
   inject,
   OnInit,
+  isDevMode,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -49,6 +50,15 @@ export class AppComponent implements OnInit {
   private readonly config = inject(APP_CONFIG);
   private readonly http = inject(HttpClient);
   private readonly route = inject(ActivatedRoute, { optional: true });
+
+  private logArch(action: string, detail: Record<string, unknown> = {}): void {
+    if (!isDevMode()) return;
+    console.info('[ARCH-FLOW][payment-mfe]', {
+      action,
+      timestamp: new Date().toISOString(),
+      ...detail,
+    });
+  }
 
   billId = signal<string>('');
 
@@ -109,6 +119,7 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     const id = this.route?.snapshot.paramMap.get('billId') ?? '';
     this.billId.set(id);
+    this.logArch('payment_form_loaded', { billId: id });
   }
 
   onAmountChange(val: string): void {
@@ -149,6 +160,11 @@ export class AppComponent implements OnInit {
         next: (res) => {
           this.submitting.set(false);
           this.confirmation.set(res);
+          this.logArch('payment_submitted_success', {
+            billId: res.billId,
+            amount: res.amount,
+            requestId: (res as { requestId?: string }).requestId ?? 'unknown',
+          });
           window.dispatchEvent(
             new CustomEvent('suite:payment:submitted', {
               detail: { billId: this.billId(), amount: this.amount() },
@@ -171,6 +187,7 @@ export class AppComponent implements OnInit {
 
   navigateToBills(event: Event): void {
     event.preventDefault();
+    this.logArch('navigate_back_to_bills', { billId: this.billId() });
     window.dispatchEvent(new CustomEvent('suite:navigate:bills'));
   }
 }

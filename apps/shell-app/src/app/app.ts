@@ -4,6 +4,7 @@ import {
   OnDestroy,
   signal,
   inject,
+  isDevMode,
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
@@ -27,7 +28,21 @@ export class App implements OnInit, OnDestroy {
 
   overdueCount = signal(0);
 
-  private paymentHandler = (_event: Event) => {
+  private logArch(event: string, detail: Record<string, unknown> = {}): void {
+    if (!isDevMode()) return;
+    console.info('[ARCH-FLOW][shell-app]', {
+      event,
+      timestamp: new Date().toISOString(),
+      ...detail,
+    });
+  }
+
+  private paymentHandler = (event: Event) => {
+    const customEvent = event as CustomEvent<{ billId?: string; amount?: number }>;
+    this.logArch('suite:payment:submitted:received', {
+      billId: customEvent.detail?.billId,
+      amount: customEvent.detail?.amount,
+    });
     this.fetchOverdueCount();
     // Push synthetic arch event for payment:submitted
     this.insightsService.push({
@@ -42,6 +57,8 @@ export class App implements OnInit, OnDestroy {
   private navigatePayHandler = (event: Event) => {
     const customEvent = event as CustomEvent<{ billId?: string }>;
     const billId = customEvent.detail?.billId;
+
+    this.logArch('suite:navigate:pay:received', { billId });
 
     if (billId) {
       this.router.navigate(['/pay', billId]);
@@ -58,6 +75,7 @@ export class App implements OnInit, OnDestroy {
   };
 
   private navigateBillsHandler = (_event: Event) => {
+    this.logArch('suite:navigate:bills:received');
     this.router.navigate(['/']);
 
     this.insightsService.push({
@@ -71,6 +89,12 @@ export class App implements OnInit, OnDestroy {
 
   private archEventHandler = (event: Event) => {
     const customEvent = event as CustomEvent<ArchEvent>;
+    this.logArch('suite:arch:event:received', {
+      code: customEvent.detail.code,
+      description: customEvent.detail.description,
+      requestId: customEvent.detail.requestId,
+      layer: customEvent.detail.layer,
+    });
     this.insightsService.push(customEvent.detail);
   };
 
