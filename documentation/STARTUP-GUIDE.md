@@ -62,6 +62,43 @@ Run the included health check script:
 ./health-check.sh
 ```
 
+## Project Overview UI (Nx)
+
+Yes. Nx provides a project details page for any app/lib, including all MFEs and APIs.
+
+Open one project detail page:
+
+```bash
+npx nx show project payment-mfe-e2e --web
+```
+
+Open project detail pages for core apps in this repo:
+
+```bash
+npx nx show project shell-app --web
+npx nx show project bills-mfe --web
+npx nx show project payment-mfe --web
+npx nx show project bills-api --web
+npx nx show project payments-api --web
+npx nx show project web-bff --web
+npx nx show project partner-bff --web
+```
+
+What you will see:
+
+- A local Nx page at an address like `http://127.0.0.1:4212/project-details/<project-name>`
+- Targets, dependencies, and configuration for that project
+
+Note: the port can change (for example, 4211, 4212) if another Nx page is already running.
+
+To see the full dependency graph for the workspace:
+
+```bash
+npx nx graph
+```
+
+This opens an interactive graph for all projects and their relationships.
+
 ## Stop Services
 
 Normal stop:
