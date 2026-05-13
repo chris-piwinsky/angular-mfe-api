@@ -45,65 +45,9 @@ Teams are organized around business domains, not technical disciplines (not a "U
 
 ## Getting Started
 
-### Prerequisites
+Use the dedicated startup walkthrough:
 
-- Node.js 22+ (managed via nvm recommended)
-- npm 10+
-- Nx workspace (installed via `npm install`)
-
-### Starting the Application
-
-**You need to run 7 services in separate terminal windows/tabs:**
-
-```bash
-# Terminal 1 - bills-api
-cd billing-portal
-PORT=4001 npx nx serve bills-api --output-style=stream
-
-# Terminal 2 - payments-api  
-cd billing-portal
-PORT=4002 npx nx serve payments-api --output-style=stream
-
-# Terminal 3 - web-bff
-cd billing-portal
-PORT=3001 npx nx serve web-bff --output-style=stream
-
-# Terminal 4 - partner-bff
-cd billing-portal
-PORT=3002 BILLS_API_URL=http://localhost:4001 PAYMENTS_API_URL=http://localhost:4002 npx nx serve partner-bff --output-style=stream
-
-# Terminal 5 - bills-mfe
-cd billing-portal
-PORT=4201 npx nx serve bills-mfe --output-style=stream
-
-# Terminal 6 - payment-mfe
-cd billing-portal
-PORT=4202 npx nx serve payment-mfe --output-style=stream
-
-# Terminal 7 - shell-app
-cd billing-portal
-npx nx serve shell-app --output-style=stream
-```
-
-> **Why separate terminals?** Each service needs its own process. Keep all terminals open while developing.
-> 
-> **Tip:** The `--output-style=stream` flag shows plain logs instead of the Nx TUI interface, making it easier to see errors and debug.
-
-**Wait ~60 seconds for all services to start**, then open **http://localhost:4200**
-
-### Stopping Services
-
-**Normal:** Press **Ctrl+C** in each terminal window.
-
-**Force stop all services:**
-```bash
-./stop-all.sh
-```
-
-Finds and kills all processes on ports 4001, 4002, 3001, 3002, 4200, 4201, 4202. Use this if:
-- Ctrl+C didn't work
-- Services are orphaned from a previous session
-- You see "port already in use" errors
+- [STARTUP-GUIDE.md](documentation/STARTUP-GUIDE.md) — prerequisites, terminal commands for all 7 services, health checks, and stop procedures
 
 ---
 
