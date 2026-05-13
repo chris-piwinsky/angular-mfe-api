@@ -1,0 +1,293 @@
+/* Flow path banner */
+/* MFE boundary */
+.mfe-boundary {
+  position: relative;
+  border: 2px dashed #188038;
+  border-radius: 6px;
+  padding: 2rem 1rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.mfe-boundary::before {
+  content: 'bills-mfe  :4201';
+  position: absolute;
+  top: -11px;
+  left: 12px;
+  background: #188038;
+  color: #fff;
+  font-family: monospace;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 8px;
+  border-radius: 3px;
+  letter-spacing: 0.03em;
+}
+
+/* Flow path banner */
+.flow-path {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 6px 12px;
+  background: #f8f9ff;
+  border: 1px solid #d0d8f0;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 11px;
+  margin-bottom: 16px;
+}
+
+.flow-node {
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.flow-node.shell {
+  background: #e8f0fe;
+  color: #1a73e8;
+  border: 1px solid #a8c7fa;
+}
+
+.flow-node.mfe {
+  background: #e6f4ea;
+  color: #188038;
+  border: 1px solid #a8d5b5;
+}
+
+.flow-node.bff {
+  background: #fff8e1;
+  color: #c47f00;
+  border: 1px solid #f9d066;
+}
+
+.flow-node.api {
+  background: #fce8e6;
+  color: #c5221f;
+  border: 1px solid #f5b9b7;
+}
+
+.flow-arrow {
+  color: #888;
+  font-weight: bold;
+}
+
+.flow-plus {
+  color: #555;
+  font-weight: bold;
+}
+
+.flow-label {
+  color: #888;
+  font-style: italic;
+}
+
+/* Filter tabs */
+.filter-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.filter-tab {
+  padding: 6px 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.filter-tab.active {
+  background: #1a73e8;
+  color: #fff;
+  border-color: #1a73e8;
+}
+
+/* Bills table */
+.bills-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.bills-table th,
+.bills-table td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.bills-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+.bill-row {
+  cursor: pointer;
+}
+
+.bill-row:hover {
+  background: #f9f9f9;
+}
+
+/* Status badges */
+.status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-overdue {
+  background: #fde8e8;
+  color: #c62828;
+}
+
+.status-unpaid {
+  background: #fff8e1;
+  color: #f57f17;
+}
+
+.status-partial {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.status-paid {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+/* Pay button */
+.pay-btn {
+  padding: 5px 12px;
+  background: #1a73e8;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.pay-btn:hover {
+  background: #1558b0;
+}
+
+/* Loading skeleton */
+.loading-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 0;
+}
+
+.skeleton-row {
+  height: 40px;
+  background: linear-gradient(90deg, #eee 25%, #f5f5f5 50%, #eee 75%);
+  border-radius: 4px;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+/* Error message */
+.error-message {
+  padding: 16px;
+  background: #fde8e8;
+  border: 1px solid #f5c6c6;
+  border-radius: 4px;
+  color: #c62828;
+}
+
+/* Empty message */
+.empty-message {
+  color: #757575;
+  font-style: italic;
+}
+
+/* Detail view */
+.detail-header {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.back-btn {
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.back-btn:hover {
+  background: #f5f5f5;
+}
+
+.bill-meta dl,
+.bill-summary dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 8px 16px;
+  margin: 0 0 20px;
+}
+
+.bill-meta dt,
+.bill-summary dt {
+  font-weight: 600;
+  color: #555;
+}
+
+.balance-due {
+  font-weight: 700;
+  color: #c62828;
+}
+
+/* Line items table */
+.line-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.line-items-table th,
+.line-items-table td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.line-items-table th {
+  background: #f5f5f5;
+  font-weight: 600;
+}
+
+/* Payment history */
+.payment-history table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.payment-history th,
+.payment-history td {
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.payment-history th {
+  background: #f5f5f5;
+  font-weight: 600;
+}

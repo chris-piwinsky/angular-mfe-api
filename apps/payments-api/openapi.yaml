@@ -1,0 +1,165 @@
+openapi: '3.0.3'
+info:
+  title: Payments API
+  description: Headless Payments domain service — records payment transactions against bills
+  version: '1.0.0'
+
+servers:
+  - url: http://localhost:4002
+
+paths:
+  /v1/payments:
+    get:
+      summary: List payments for a bill
+      operationId: listPayments
+      parameters:
+        - name: billId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The bill ID to retrieve payments for
+      responses:
+        '200':
+          description: Array of payments for the given bill
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, requestId]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Payment'
+                  requestId:
+                    type: string
+        '400':
+          description: Missing required billId parameter
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Record a new payment
+      operationId: createPayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '201':
+          description: Payment recorded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/payments/{id}:
+    get:
+      summary: Get a single payment by ID
+      operationId: getPaymentById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A payment record
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '404':
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+components:
+  schemas:
+    PaymentRequest:
+      type: object
+      required: [billId, amount, method, maskedAccount]
+      properties:
+        billId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          description: Payment amount in USD (must be > 0)
+        method:
+          type: string
+          enum: [card, ach]
+        maskedAccount:
+          type: string
+          description: Last 4 digits of card/account only (e.g. "••••4242")
+          example: '••••4242'
+
+    Payment:
+      type: object
+      required: [id, billId, amount, method, maskedAccount, status, createdAt, requestId]
+      properties:
+        id:
+          type: string
+          format: uuid
+        billId:
+          type: string
+        amount:
+          type: number
+          description: Payment amount in USD
+        method:
+          type: string
+          enum: [card, ach]
+        maskedAccount:
+          type: string
+        status:
+          type: string
+          enum: [pending, completed, failed]
+        createdAt:
+          type: string
+          format: date-time
+        requestId:
+          type: string
+          format: uuid
+
+    ErrorResponse:
+      type: object
+      required: [error, message, requestId]
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        requestId:
+          type: string
+          format: uuid

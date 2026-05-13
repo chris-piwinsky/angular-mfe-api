@@ -1,0 +1,4 @@
+{
+  "billsMFE": "http://localhost:4201/remoteEntry.json",
+  "paymentMFE": "http://localhost:4202/remoteEntry.json"
+}

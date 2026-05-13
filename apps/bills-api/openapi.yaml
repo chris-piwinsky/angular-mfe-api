@@ -1,0 +1,188 @@
+openapi: '3.0.3'
+info:
+  title: Bills API
+  description: Headless Bills domain service — raw JSON, no auth, no presentation logic
+  version: '1.0.0'
+
+servers:
+  - url: http://localhost:4001
+
+paths:
+  /v1/bills:
+    get:
+      summary: List bills
+      operationId: listBills
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [unpaid, paid, overdue, partial]
+        - name: accountId
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Array of bills
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [data, requestId]
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Bill'
+                  requestId:
+                    type: string
+
+  /v1/bills/{id}:
+    get:
+      summary: Get a single bill by ID
+      operationId: getBillById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A bill with line items
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bill'
+        '404':
+          description: Bill not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /health:
+    get:
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    example: ok
+
+components:
+  schemas:
+    Bill:
+      type: object
+      required:
+        - id
+        - accountId
+        - invoiceNumber
+        - billingPeriod
+        - issuedDate
+        - dueDate
+        - totalAmount
+        - amountPaid
+        - balance
+        - status
+        - lineItems
+        - requestId
+      properties:
+        id:
+          type: string
+          format: uuid
+        accountId:
+          type: string
+        invoiceNumber:
+          type: string
+          example: INV-2026-0042
+        billingPeriod:
+          type: object
+          required: [start, end]
+          properties:
+            start:
+              type: string
+              format: date
+              example: '2026-03-01'
+            end:
+              type: string
+              format: date
+              example: '2026-03-31'
+        issuedDate:
+          type: string
+          format: date
+        dueDate:
+          type: string
+          format: date
+        totalAmount:
+          type: number
+          description: Total amount in USD
+        amountPaid:
+          type: number
+          description: Amount already paid in USD
+        balance:
+          type: number
+          description: Always computed as totalAmount - amountPaid
+        status:
+          type: string
+          enum: [unpaid, paid, overdue, partial]
+        lineItems:
+          type: array
+          items:
+            $ref: '#/components/schemas/LineItem'
+        requestId:
+          type: string
+          format: uuid
+
+    LineItem:
+      type: object
+      required: [id, description, quantity, unitPrice, total]
+      properties:
+        id:
+          type: string
+          format: uuid
+        description:
+          type: string
+        quantity:
+          type: number
+        unitPrice:
+          type: number
+          description: Unit price in USD
+        total:
+          type: number
+          description: quantity * unitPrice
+
+    ErrorResponse:
+      type: object
+      required: [error, message, requestId]
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        requestId:
+          type: string
+          format: uuid

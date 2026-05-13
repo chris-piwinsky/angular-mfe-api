@@ -1,0 +1,18 @@
+<header class="shell-header">
+  <span class="shell-title">Billing Portal</span>
+  <nav class="shell-nav">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Bills</a>
+    @if (overdueCount() > 0) {
+      <span class="overdue-badge">Overdue ({{ overdueCount() }})</span>
+    }
+    <button class="arch-toggle-btn" (click)="insightsService.toggle()" aria-label="Toggle Architecture Insights">
+      ⚡ Arch
+    </button>
+  </nav>
+</header>
+
+<main class="shell-main">
+  <router-outlet />
+</main>
+
+<app-architecture-insights />
