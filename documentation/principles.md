@@ -2,8 +2,8 @@
 
 > These principles are the standards every architecture and engineering team in Billing and Payments is expected to promote, defend, and apply. They are not aspirational — they are the agreed-upon way we work.
 >
-> For the full technical standards behind these principles, see [suite-architecture-standards.md](./suite-architecture-standards.md).
-> For plain-English definitions of any term used here, see [definitions.md](./definitions.md).
+> For the full technical standards behind these principles, see [suite-architecture-standards.md](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md).
+> For plain-English definitions of any term used here, see [definitions.md](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md).
 
 ---
 
@@ -13,7 +13,7 @@ Billing and Payments has accumulated numerous separate UIs — not because that 
 
 The result is a growing number of surfaces to maintain, test, and evolve — instead of one platform that powers all of them.
 
-These principles exist to stop that pattern from compounding further and to give us the foundation to consolidate. A well-designed [headless](./definitions.md#headless-api--domain-api--domain-service) platform means the next surface — web, mobile, partner, internal tool — consumes the same [domain APIs](./definitions.md#headless-api--domain-api--domain-service) through a purpose-built [BFF](./definitions.md#backend-for-frontend-bff), rather than spawning another bespoke integration. Over time, surfaces that were built as one-offs can be replaced by composable [MFEs](./definitions.md#micro-frontend-mfe) drawing from a stable API layer. The goal is not numerous UIs maintained in parallel. The goal is one platform, expressed through many surfaces.
+These principles exist to stop that pattern from compounding further and to give us the foundation to consolidate. A well-designed [headless](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#headless-api--domain-api--domain-service) platform means the next surface — web, mobile, partner, internal tool — consumes the same [domain APIs](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#headless-api--domain-api--domain-service) through a purpose-built [BFF](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#backend-for-frontend-bff), rather than spawning another bespoke integration. Over time, surfaces that were built as one-offs can be replaced by composable [MFEs](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#micro-frontend-mfe) drawing from a stable API layer. The goal is not numerous UIs maintained in parallel. The goal is one platform, expressed through many surfaces.
 
 We are deliberately breaking that pattern.
 
@@ -36,7 +36,7 @@ If the answer is no — if the architecture makes it easier to bypass the BFF, c
 Build every Billing and Payments domain capability as a headless API first. The UI is a consumer — not the owner. An API designed only to answer a specific screen's question is not a platform; it is a bespoke integration that will need to be rebuilt when the next screen has a different need.
 
 **In practice:**
-- Define the [OpenAPI](./definitions.md#openapi--openapi-schema) schema before writing any implementation code
+- Define the [OpenAPI](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#openapi--openapi-schema) schema before writing any implementation code
 - Any capability that exists only inside a UI does not count as a platform capability
 - Domain APIs (bills, payments) must be usable by web, mobile, partner, and internal tooling consumers without modification
 
@@ -59,7 +59,7 @@ The domain service owns the data and the rules. The BFF owns the question "what 
 
 **Watch out for:** The old pattern — a new screen request creates a new API. That is the pattern we are replacing.
 
-**BFF is a pattern, not a technology.** This project implements the BFF as an Express/TypeScript REST service. That is one valid choice, not a definition of the pattern. A [GraphQL](./definitions.md#graphql) server whose resolvers aggregate domain APIs is equally a BFF — the schema is the contract, resolvers handle the aggregation, and auth, PCI boundary enforcement, and correlation ID propagation still live there. A .NET minimal API, a Go service, or a set of serverless functions can all fulfill the same role. What makes something a BFF is its purpose and placement — purpose-built for one consumer surface, sitting between that surface and the domain APIs — not the language or protocol it uses.
+**BFF is a pattern, not a technology.** This project implements the BFF as an Express/TypeScript REST service. That is one valid choice, not a definition of the pattern. A [GraphQL](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#graphql) server whose resolvers aggregate domain APIs is equally a BFF — the schema is the contract, resolvers handle the aggregation, and auth, PCI boundary enforcement, and correlation ID propagation still live there. A .NET minimal API, a Go service, or a set of serverless functions can all fulfill the same role. What makes something a BFF is its purpose and placement — purpose-built for one consumer surface, sitting between that surface and the domain APIs — not the language or protocol it uses.
 
 ---
 
@@ -70,7 +70,7 @@ No micro frontend makes direct calls to domain APIs. The BFF is the single netwo
 **Why this matters for Billing and Payments:**
 - Payment data is sensitive. The BFF is the security perimeter — it validates tokens, enforces authorization, and masks data before it reaches the browser
 - Direct frontend-to-domain-API calls bypass all of this and expose internal service contracts to the browser
-- [PCI DSS](./definitions.md#pci-dss-payment-card-industry-data-security-standard) scope is contained at the [tokenization](./definitions.md#tokenization-payment-tokenization) boundary; card data never transits the BFF or MFE. Only masked references (last 4 digits, payment method token) are handled by Suite-owned systems
+- [PCI DSS](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#pci-dss-payment-card-industry-data-security-standard) scope is contained at the [tokenization](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#tokenization-payment-tokenization) boundary; card data never transits the BFF or MFE. Only masked references (last 4 digits, payment method token) are handled by Suite-owned systems
 
 **Watch out for:** A micro frontend that calls `localhost:4001` or any domain API URL directly. This is a violation, not a shortcut.
 
@@ -81,7 +81,7 @@ No micro frontend makes direct calls to domain APIs. The BFF is the single netwo
 Every micro frontend, every BFF, and every domain service must be deployable on its own — without coordinating with other teams, without a shared release window, and without awareness of the current state of other pipelines.
 
 **In practice:**
-- Each MFE has its own [CI/CD](./definitions.md#cicd-pipeline-continuous-integration--continuous-delivery) pipeline; deploying bills-MFE does not require payment-MFE to be deployed simultaneously
+- Each MFE has its own [CI/CD](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#cicd-pipeline-continuous-integration--continuous-delivery) pipeline; deploying bills-MFE does not require payment-MFE to be deployed simultaneously
 - Coupling that forces coordinated releases is a design problem, not a scheduling problem — fix the coupling
 - Use runtime composition (Module Federation / Native Federation) — never bundle MFEs together at build time
 - BFFs and domain APIs are stateless — no in-memory session state, no sticky sessions. Any state that must persist lives in a backing service (cache, database). Stateless processes scale horizontally and restart cleanly; stateful ones do neither
@@ -92,9 +92,9 @@ Every micro frontend, every BFF, and every domain service must be deployable on 
 
 ### P5 — Design Teams the Way You Want the System to Look
 
-Teams organized around [horizontal technical concerns](./definitions.md#horizontal-technical-team) (a "forms team," a "shared API team," a "styling team") will produce systems with horizontal layers that every domain team must navigate through. That is [Conway's Law](./definitions.md#conways-law) working against you.
+Teams organized around [horizontal technical concerns](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#horizontal-technical-team) (a "forms team," a "shared API team," a "styling team") will produce systems with horizontal layers that every domain team must navigate through. That is [Conway's Law](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#conways-law) working against you.
 
-Organize Billing and Payments teams around **[vertical business domain slices](./definitions.md#vertical-domain-slice--vertical-team)** — a team owns the database, the domain API, the BFF, and the micro frontend for their domain. That team can design, build, test, and deploy without waiting for anyone else.
+Organize Billing and Payments teams around **[vertical business domain slices](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#vertical-domain-slice--vertical-team)** — a team owns the database, the domain API, the BFF, and the micro frontend for their domain. That team can design, build, test, and deploy without waiting for anyone else.
 
 **In practice:**
 - The bills team owns everything in the bills domain end-to-end
@@ -111,7 +111,7 @@ The default answer to "we need a new capability" is to assemble it from existing
 
 **For Billing and Payments specifically:**
 - Vendor integrations (payment processors, identity providers) are abstracted behind Suite-owned interfaces so vendors can be replaced without touching MFEs or domain APIs
-- The organization is moving toward [build/assemble over buy](./definitions.md#build-vs-buy-vs-assemble); this does not mean building commodity capabilities — it means owning the integration layer and avoiding [lock-in](./definitions.md#vendor-lock-in)
+- The organization is moving toward [build/assemble over buy](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#build-vs-buy-vs-assemble); this does not mean building commodity capabilities — it means owning the integration layer and avoiding [lock-in](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#vendor-lock-in)
 
 **Watch out for:** A vendor SDK called directly from a micro frontend or domain API. Replacing that vendor becomes a rewrite.
 
@@ -132,7 +132,7 @@ Decoupling the UI from the domain API introduces latency that must be managed de
 
 ### P8 — Observability Is Non-Negotiable
 
-You cannot debug a distributed system you cannot observe. Every service emits [structured logs](./definitions.md#structured-logs) with [correlation IDs](./definitions.md#correlation-id--request-id) to `stdout` — not to files. Every request is traceable from the MFE through the BFF to each domain API call. Every service exposes a [health endpoint](./definitions.md#health-endpoint).
+You cannot debug a distributed system you cannot observe. Every service emits [structured logs](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#structured-logs) with [correlation IDs](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#correlation-id--request-id) to `stdout` — not to files. Every request is traceable from the MFE through the BFF to each domain API call. Every service exposes a [health endpoint](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#health-endpoint).
 
 **Why this matters here:** When a payment fails, the question "where did it fail?" must be answerable in minutes from logs and traces — not from a cross-team investigation. Correlation IDs propagated from the BFF through all downstream calls are the mechanism.
 
@@ -162,13 +162,13 @@ A billing summary card on mobile and a full billing detail page on web call the 
 
 If the payments service is unavailable, the billing micro frontend still loads and shows bill information. It does not crash. It does not show a blank screen. It shows the data it has and clearly communicates what it cannot show.
 
-[Circuit breakers](./definitions.md#circuit-breaker) at the BFF layer prevent cascading failures. Structured error responses from domain services give the BFF enough information to degrade gracefully. MFEs handle partial failures at the component level — one broken widget does not take down the page.
+[Circuit breakers](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#circuit-breaker) at the BFF layer prevent cascading failures. Structured error responses from domain services give the BFF enough information to degrade gracefully. MFEs handle partial failures at the component level — one broken widget does not take down the page.
 
 ---
 
 ### E4 — Authentication Is the Shell's Job; Authorization Is Everyone's Job
 
-The [shell/container application](./definitions.md#shell--container-application) handles [authentication](./definitions.md#authentication-vs-authorization) — it obtains tokens and injects them into MFEs on initialization. MFEs do not manage auth sessions.
+The [shell/container application](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#shell--container-application) handles [authentication](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#authentication-vs-authorization) — it obtains tokens and injects them into MFEs on initialization. MFEs do not manage auth sessions.
 
 Authorization — validating that a caller is permitted to take a specific action — is the responsibility of every layer independently. The BFF validates the token before any downstream call. Domain APIs validate on inbound service-to-service calls. No layer trusts a caller simply because it came from inside the network.
 
@@ -176,7 +176,7 @@ Authorization — validating that a caller is permitted to take a specific actio
 
 ### E5 — Versioning Starts on Day One
 
-Every API is [versioned](./definitions.md#versioning-api-versioning) from its first release. Breaking changes get a new version — not a silent modification. Consumers receive minimum 90 days notice before an old version is removed.
+Every API is [versioned](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#versioning-api-versioning) from its first release. Breaking changes get a new version — not a silent modification. Consumers receive minimum 90 days notice before an old version is removed.
 
 In Billing and Payments, a silent breaking change to a payment API endpoint can affect multiple MFEs, partner integrations, and internal tools simultaneously. Versioning is not optional overhead; it is the mechanism that makes independent deployability safe.
 
@@ -184,9 +184,9 @@ In Billing and Payments, a silent breaking change to a payment API endpoint can 
 
 ### E6 — Security at Every Boundary
 
-- All traffic is [TLS](./definitions.md#tls-transport-layer-security)-encrypted — including service-to-service calls that never touch the public internet
+- All traffic is [TLS](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#tls-transport-layer-security)-encrypted — including service-to-service calls that never touch the public internet
 - Auth tokens are validated at the BFF before any downstream call is made; domain APIs validate on inbound service calls
-- [Rate limiting](./definitions.md#rate-limiting) at the BFF layer protects domain services from abuse and prevents payment endpoints from being a direct attack surface
+- [Rate limiting](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#rate-limiting) at the BFF layer protects domain services from abuse and prevents payment endpoints from being a direct attack surface
 - Payment card data (PAN, CVV, expiry) never passes through the BFF or MFEs; use PSP-provided tokenization at the point of entry; handle only masked references thereafter
 - All deployment-varying config (service URLs, credentials, feature flags, hostnames) lives in environment variables — not hardcoded in source code, not in checked-in config files. This applies to BFFs and domain APIs equally, not just the frontend
 - No secrets in frontend code — the BFF manages credentials for downstream services

@@ -2,7 +2,7 @@
 
 ## What This Demonstrates
 
-**Principle [A2](./suite-architecture-standards.md#a2): BFF Per Surface, Not Per Service**
+**Principle [A2](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#a2): BFF Per Surface, Not Per Service**
 
 Two surfaces (web UI and B2B partner integration) → Two BFFs → Same domain APIs.
 
@@ -213,6 +213,6 @@ All services coexist. Two BFFs. One set of domain APIs. This is A2 in production
 
 ## Further Reading
 
-- [A2 — BFF Per Surface, Not Per Service](./suite-architecture-standards.md#a2)
+- [A2 — BFF Per Surface, Not Per Service](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#a2)
 - [Sam Newman — BFF Pattern](https://samnewman.io/patterns/architectural/bff/)
-- [P2 — BFF Owns the Contract, Domain API Owns the Truth](./principles.md#p2)
+- [P2 — BFF Owns the Contract, Domain API Owns the Truth](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/principles.md#p2)

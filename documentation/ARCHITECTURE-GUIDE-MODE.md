@@ -9,9 +9,9 @@ The Billing Portal now includes an **Architecture Insights Panel** that narrates
 ### STEP 1 — BFF: `x-arch-note` Response Headers
 
 **Modified files:**
-- [`apps/web-bff/src/routes/bills.ts`](../apps/web-bff/src/routes/bills.ts)
-- [`apps/web-bff/src/routes/payments.ts`](../apps/web-bff/src/routes/payments.ts)
-- [`apps/web-bff/src/middleware/auth.ts`](../apps/web-bff/src/middleware/auth.ts)
+- [`apps/web-bff/src/routes/bills.ts`](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/apps/web-bff/src/routes/bills.ts)
+- [`apps/web-bff/src/routes/payments.ts`](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/apps/web-bff/src/routes/payments.ts)
+- [`apps/web-bff/src/middleware/auth.ts`](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/apps/web-bff/src/middleware/auth.ts)
 
 Every successful BFF response now includes an `x-arch-note` header with format:
 ```
@@ -36,12 +36,12 @@ PRINCIPLE_CODE:EVENT_ID|human description
 ### STEP 2 — MFE Interceptors: Read Headers & Emit Events
 
 **New files:**
-- [`apps/bills-mfe/src/app/arch-note.interceptor.ts`](../apps/bills-mfe/src/app/arch-note.interceptor.ts)
-- [`apps/payment-mfe/src/app/arch-note.interceptor.ts`](../apps/payment-mfe/src/app/arch-note.interceptor.ts)
+- [`apps/bills-mfe/src/app/arch-note.interceptor.ts`](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/apps/bills-mfe/src/app/arch-note.interceptor.ts)
+- [`apps/payment-mfe/src/app/arch-note.interceptor.ts`](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/apps/payment-mfe/src/app/arch-note.interceptor.ts)
 
 **Modified files:**
-- [`apps/bills-mfe/src/app/app.config.ts`](../apps/bills-mfe/src/app/app.config.ts) — registered `archNoteInterceptor`
-- [`apps/payment-mfe/src/app/app.config.ts`](../apps/payment-mfe/src/app/app.config.ts) — registered `archNoteInterceptor`
+- [`apps/bills-mfe/src/app/app.config.ts`](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/apps/bills-mfe/src/app/app.config.ts) — registered `archNoteInterceptor`
+- [`apps/payment-mfe/src/app/app.config.ts`](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/apps/payment-mfe/src/app/app.config.ts) — registered `archNoteInterceptor`
 
 **How it works:**
 1. HTTP interceptor reads `x-arch-note` header from every BFF response
@@ -56,14 +56,14 @@ PRINCIPLE_CODE:EVENT_ID|human description
 ### STEP 3 — shell-app: Service, Component, and Event Listeners
 
 **New files:**
-- [`apps/shell-app/src/app/arch-insights/arch-event.interface.ts`](../apps/shell-app/src/app/arch-insights/arch-event.interface.ts)
-- [`apps/shell-app/src/app/arch-insights/architecture-insights.service.ts`](../apps/shell-app/src/app/arch-insights/architecture-insights.service.ts)
-- [`apps/shell-app/src/app/arch-insights/architecture-insights.component.ts`](../apps/shell-app/src/app/arch-insights/architecture-insights.component.ts)
+- [`apps/shell-app/src/app/arch-insights/arch-event.interface.ts`](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/apps/shell-app/src/app/arch-insights/arch-event.interface.ts)
+- [`apps/shell-app/src/app/arch-insights/architecture-insights.service.ts`](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/apps/shell-app/src/app/arch-insights/architecture-insights.service.ts)
+- [`apps/shell-app/src/app/arch-insights/architecture-insights.component.ts`](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/apps/shell-app/src/app/arch-insights/architecture-insights.component.ts)
 
 **Modified files:**
-- [`apps/shell-app/src/app/app.ts`](../apps/shell-app/src/app/app.ts) — added event listeners, synthetic events
-- [`apps/shell-app/src/app/app.html`](../apps/shell-app/src/app/app.html) — added toggle button and component
-- [`apps/shell-app/src/app/app.css`](../apps/shell-app/src/app/app.css) — styled toggle button
+- [`apps/shell-app/src/app/app.ts`](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/apps/shell-app/src/app/app.ts) — added event listeners, synthetic events
+- [`apps/shell-app/src/app/app.html`](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/apps/shell-app/src/app/app.html) — added toggle button and component
+- [`apps/shell-app/src/app/app.css`](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/apps/shell-app/src/app/app.css) — styled toggle button
 
 #### ArchitectureInsightsService
 
@@ -261,9 +261,9 @@ expect(lastDispatchedEvent.detail.code).toBe('A3:BFF-PROXY');
 
 ## Documentation Links
 
-- [Suite Architecture Standards](./suite-architecture-standards.md) — Full principles reference
-- [Principles](./principles.md) — Engineering philosophy
-- [Definitions](./definitions.md) — Vocabulary reference
+- [Suite Architecture Standards](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md) — Full principles reference
+- [Principles](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/principles.md) — Engineering philosophy
+- [Definitions](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md) — Vocabulary reference
 
 ---
 

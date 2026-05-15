@@ -134,7 +134,7 @@ A methodology for building software-as-a-service applications that are portable,
 ### MACH
 An acronym for a set of architectural principles: **M**icroservices, **A**PI-first, **C**loud-native, **H**eadless. MACH describes a category of modern software platforms built on composable, independently deployable services.
 
-**A note on "cloud-native":** In MACH, cloud-native means *designed for cloud deployment patterns* — containerized, horizontally scalable, stateless, following [12-factor app](./definitions.md#12-factor-app) principles. It does not mean deep coupling to a specific cloud provider's proprietary services. There is an important distinction:
+**A note on "cloud-native":** In MACH, cloud-native means *designed for cloud deployment patterns* — containerized, horizontally scalable, stateless, following [12-factor app](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#12-factor-app) principles. It does not mean deep coupling to a specific cloud provider's proprietary services. There is an important distinction:
 - **Cloud-portable:** Containerized and stateless; works on any cloud provider or on-prem. This is what MACH intends.
 - **Cloud-coupled:** Built directly on proprietary managed services (e.g., calling AWS SDK directly from business logic) in a way that makes switching providers a rewrite.
 
@@ -196,7 +196,7 @@ An automated mechanism that detects when a downstream service is failing and sto
 The ability to understand what is happening inside a system from the outside, using the data it emits. Three pillars: logs (a record of events), metrics (measurements over time), and traces (the path of a request through multiple services). You cannot diagnose or improve what you cannot observe.
 
 ### Structured Logs
-Log entries written in a consistent, machine-readable format (usually JSON) rather than free-form text, emitted to `stdout` rather than written to files. Writing to stdout means the execution environment — not the application — is responsible for routing and storing logs. Structured logs can be queried, filtered, and aggregated by monitoring tools to diagnose problems at scale. This is the approach mandated by [12-factor app](./definitions.md#12-factor-app) Factor XI.
+Log entries written in a consistent, machine-readable format (usually JSON) rather than free-form text, emitted to `stdout` rather than written to files. Writing to stdout means the execution environment — not the application — is responsible for routing and storing logs. Structured logs can be queried, filtered, and aggregated by monitoring tools to diagnose problems at scale. This is the approach mandated by [12-factor app](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#12-factor-app) Factor XI.
 
 ### Correlation ID / Request ID
 A unique identifier attached to a request at the entry point (BFF) and propagated through every downstream service call. When something goes wrong, the correlation ID lets engineers trace the full path of a request across all the services it touched — even across separate systems.

@@ -3,7 +3,7 @@
 
 > **Purpose:** Establish shared vocabulary, architectural guardrails, and engineering principles for the Suite across all teams and products.
 
-> **New to any of these terms?** See the [Definitions & Vocabulary Guide](./definitions.md) for plain-English explanations of every term in this document — written for directors and first-line leaders.
+> **New to any of these terms?** See the [Definitions & Vocabulary Guide](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md) for plain-English explanations of every term in this document — written for directors and first-line leaders.
 
 > **Design philosophy:** These standards are built around the [Pit of Success](https://blog.codinghorror.com/falling-into-the-pit-of-success/) principle — a well-designed system makes it easy to do the right things and annoying (but not impossible) to do the wrong things. If engineers are consistently making the wrong architectural call, the system hasn't made the right call obvious enough. The guardrails, anti-patterns, and explicit contracts in this document are the mechanism.
 
@@ -34,7 +34,7 @@ Each layer has **one responsibility**. No layer reaches across another to bypass
 
 ## 2. Core Concepts
 
-### Micro Frontend — [definition](./definitions.md#micro-frontend-mfe)
+### Micro Frontend — [definition](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#micro-frontend-mfe)
 The presentation layer is decomposed into [independently deliverable frontend applications that are composed into a greater whole](https://martinfowler.com/articles/micro-frontends.html). Each micro frontend is owned end-to-end by a single team, built in the team's chosen framework, and deployed independently. No shared monolithic front end exists in the Suite.
 
 **Key properties:**
@@ -47,7 +47,7 @@ The presentation layer is decomposed into [independently deliverable frontend ap
 **Team structure:**
 Teams are organized around [**vertical business domain slices**](https://martinfowler.com/articles/micro-frontends.html) — owning a section of a product from ideation through production (database, API, UI). Do not form teams around horizontal technical concerns (e.g., a "styling team" or "forms team") — this recreates the coupling micro frontends are designed to eliminate.
 
-This is a deliberate application of the **[Inverse Conway Maneuver](./definitions.md#inverse-conway-maneuver)**: rather than letting org structure accidentally dictate system shape ([Conway's Law](./definitions.md#conways-law) — *"organizations design systems that mirror their own communication structure"*), you intentionally design team boundaries to match the architecture you want. Vertical domain teams produce independently deployable vertical slices. Horizontal technical teams produce layered monoliths.
+This is a deliberate application of the **[Inverse Conway Maneuver](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#inverse-conway-maneuver)**: rather than letting org structure accidentally dictate system shape ([Conway's Law](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#conways-law) — *"organizations design systems that mirror their own communication structure"*), you intentionally design team boundaries to match the architecture you want. Vertical domain teams produce independently deployable vertical slices. Horizontal technical teams produce layered monoliths.
 
 **Container application:**
 A single shell/container application is responsible for:
@@ -58,7 +58,7 @@ A single shell/container application is responsible for:
 
 The container itself contains minimal logic. Business functionality lives in the micro frontends it hosts.
 
-### Backend for Frontend (BFF) — [definition](./definitions.md#backend-for-frontend-bff)
+### Backend for Frontend (BFF) — [definition](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#backend-for-frontend-bff)
 The BFF is a purpose-built API gateway that sits between the micro frontend and the downstream headless APIs. It is **not** a generic API gateway — it is tailored to the needs of a specific frontend surface (web, mobile, internal tooling, etc.).
 
 **What the BFF does:**
@@ -76,7 +76,7 @@ The BFF is a purpose-built API gateway that sits between the micro frontend and 
 **Decision heuristic — BFF vs. domain service:**
 When you are unsure where a piece of logic belongs, ask: *"Does this logic exist only because this specific UI needs it?"* If yes, it belongs in the BFF. If the honest answer is *"this is reusable behaviour that any consumer could need"*, it belongs in the domain service. Duplication of logic across BFFs for different surfaces is acceptable — that is duplication across team boundaries, not within a codebase. Moving shared behaviour into a BFF library to avoid that duplication recreates the coupling the BFF boundary was designed to eliminate.
 
-### Headless API / API-First — [definitions](./definitions.md#domain-api--domain-service--headless-api)
+### Headless API / API-First — [definitions](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#domain-api--domain-service--headless-api)
 Domain services expose all of their capabilities through a documented, versioned, and platform-agnostic API before any frontend is built. The API is the product.
 
 **API-First means:**
@@ -93,10 +93,10 @@ Domain services expose all of their capabilities through a documented, versioned
 
 | Term | What it means |
 |---|---|
-| [**Decoupled**](./definitions.md#domain-api--domain-service--headless-api) | Frontend and backend are separate systems connected only via APIs |
-| [**Headless**](./definitions.md#domain-api--domain-service--headless-api) | Backend has no predefined UI; any frontend can consume it |
-| [**API-First**](./definitions.md#api-first) | APIs are designed and contracted before implementation; they are the primary interface |
-| [**Composable**](./definitions.md#composable-architecture) | Independent services are assembled into a product ([MACH](./definitions.md#mach): Microservices, API-first, Cloud-native, Headless) |
+| [**Decoupled**](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#domain-api--domain-service--headless-api) | Frontend and backend are separate systems connected only via APIs |
+| [**Headless**](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#domain-api--domain-service--headless-api) | Backend has no predefined UI; any frontend can consume it |
+| [**API-First**](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#api-first) | APIs are designed and contracted before implementation; they are the primary interface |
+| [**Composable**](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#composable-architecture) | Independent services are assembled into a product ([MACH](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#mach): Microservices, API-first, Cloud-native, Headless) |
 
 These are not synonyms. API-First is the prerequisite. Headless is the outcome. Composable is the goal.
 
@@ -108,13 +108,13 @@ How micro frontends are integrated onto a page has [major architectural implicat
 
 | Approach | Mechanism | Verdict |
 |---|---|---|
-| [**Build-time integration**](./definitions.md#build-time-integration) | Micro frontends published as npm packages, bundled by the container at build time | **Avoid** — any change to one MFE forces a rebuild and release of the container and all sibling MFEs |
-| [**Run-time via JavaScript / Module Federation**](./definitions.md#module-federation--native-federation) | Each MFE exposes an entry-point function; container loads and mounts at runtime via Module Federation (Webpack Module Federation for React/Vue; Native Federation for Angular — Vite/ESBuild-based equivalent) | **Preferred** — fully independent deployability; dependency sharing without lockstep releases |
-| [**Run-time via Web Components / Custom Elements**](./definitions.md#web-components--custom-elements) | Each MFE registers a Custom Element; container instantiates via standard HTML tags | **Good** — framework-agnostic; leverages browser standards; works across tech stacks |
+| [**Build-time integration**](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#build-time-integration) | Micro frontends published as npm packages, bundled by the container at build time | **Avoid** — any change to one MFE forces a rebuild and release of the container and all sibling MFEs |
+| [**Run-time via JavaScript / Module Federation**](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#module-federation--native-federation) | Each MFE exposes an entry-point function; container loads and mounts at runtime via Module Federation (Webpack Module Federation for React/Vue; Native Federation for Angular — Vite/ESBuild-based equivalent) | **Preferred** — fully independent deployability; dependency sharing without lockstep releases |
+| [**Run-time via Web Components / Custom Elements**](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#web-components--custom-elements) | Each MFE registers a Custom Element; container instantiates via standard HTML tags | **Good** — framework-agnostic; leverages browser standards; works across tech stacks |
 | **Server-side composition** | Server assembles HTML fragments (SSI / ESI / edge rendering) before delivery to browser | **Appropriate for content-heavy pages** — improves initial load; renders without JavaScript; use skeleton screens for dynamic fragments |
 | **Run-time via iframes** | Each MFE embedded in an iframe | **Last resort** — strong isolation but breaks routing, history, deep-linking, and responsive layout |
 
-### Where a micro frontend falls on the [Documents-to-Applications Continuum](./definitions.md#documents-to-applications-continuum)
+### Where a micro frontend falls on the [Documents-to-Applications Continuum](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#documents-to-applications-continuum)
 Not every micro frontend is the same kind of thing. [The Documents-to-Applications Continuum](https://ar.al/notes/the-documents-to-applications-continuum/) provides a useful diagnostic: ask *"if I removed all behaviour, would the content still have value?"* The answer changes both the appropriate rendering strategy and how progressive enhancement applies.
 
 | MFE type | Continuum position | Rendering guidance |
@@ -215,13 +215,13 @@ No micro frontend makes direct calls to domain APIs. The BFF is the only network
 ### A4 — Loose Coupling, Explicit Contracts
 Services communicate through versioned, documented API contracts. Avoid shared libraries that couple domain logic across service boundaries. When a contract changes, version it — do not silently break consumers.
 
-### A5 — [Independent Deployability](./definitions.md#independent-deployability)
+### A5 — [Independent Deployability](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#independent-deployability)
 Each micro frontend, each BFF, and each domain service must be deployable independently without coordinating a simultaneous release across layers. If a deployment requires coordination across more than one layer, that is a coupling violation to be resolved — not a process to be scheduled.
 
-Each micro frontend must have its own [CI/CD pipeline](./definitions.md#cicd-pipeline-continuous-integration--continuous-delivery) that builds, tests, and deploys it to production independently. A deployment of one MFE should require no awareness of the current state of other MFE pipelines.
+Each micro frontend must have its own [CI/CD pipeline](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#cicd-pipeline-continuous-integration--continuous-delivery) that builds, tests, and deploys it to production independently. A deployment of one MFE should require no awareness of the current state of other MFE pipelines.
 
 ### A6 — Composable by Default
-Prefer assembling functionality from purpose-built domain APIs over building bespoke backend logic that could be a domain service. Evaluate **[build vs. buy vs. assemble](./definitions.md#build-vs-buy-vs-assemble)** for every new capability, with preference toward assemble.
+Prefer assembling functionality from purpose-built domain APIs over building bespoke backend logic that could be a domain service. Evaluate **[build vs. buy vs. assemble](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#build-vs-buy-vs-assemble)** for every new capability, with preference toward assemble.
 
 | Option | What it means | When to choose it |
 |---|---|---|
@@ -231,16 +231,16 @@ Prefer assembling functionality from purpose-built domain APIs over building bes
 
 The Suite default is **assemble**: use your domain APIs as the building blocks, abstract vendor integrations behind Suite-owned contracts (A7), and reserve **build** for capabilities that are genuinely unique to your business. **Buy** is appropriate for commodity infrastructure; always abstract the vendor behind a Suite-owned interface so the vendor can be replaced without touching micro frontends or other domain services.
 
-### A7 — No [Vendor Lock-in](./definitions.md#vendor-lock-in) at the Architecture Level
+### A7 — No [Vendor Lock-in](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#vendor-lock-in) at the Architecture Level
 [Vendor-specific APIs must be abstracted behind Suite-owned interfaces](https://www.paragon-inc.com/content/post/why-organizations-should-build-custom-apis-for-a-headless-cms-experience). If a vendor is replaced, the change is contained to the adapter layer — no micro frontend or BFF should require modification.
 
-### A8 — [Observability](./definitions.md#observability) Is Not Optional
-Every layer must emit [structured logs](./definitions.md#structured-logs), [distributed traces](./definitions.md#distributed-tracing) (with correlation IDs propagated across the BFF and into domain calls), and health/readiness endpoints. You cannot debug what you cannot observe.
+### A8 — [Observability](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#observability) Is Not Optional
+Every layer must emit [structured logs](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#structured-logs), [distributed traces](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#distributed-tracing) (with correlation IDs propagated across the BFF and into domain calls), and health/readiness endpoints. You cannot debug what you cannot observe.
 
-### A9 — [Teams Own Vertical Slices](./definitions.md#vertical-domain-slice--vertical-team), Not [Horizontal Layers](./definitions.md#horizontal-technical-team)
+### A9 — [Teams Own Vertical Slices](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#vertical-domain-slice--vertical-team), Not [Horizontal Layers](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#horizontal-technical-team)
 Team boundaries follow business domain capabilities, not technical disciplines. A team owns everything from the database through the API to the UI for their domain. Do not create teams organized around horizontal concerns (styling, forms, validation) without a corresponding domain. Horizontal concerns become shared services, design systems, or guilds — not blocking dependencies on another team's roadmap.
 
-**[Conway's Law](./definitions.md#conways-law) in practice:** If you draw team boundaries incorrectly, the architecture will follow. A separate "BFF team" will produce a BFF that drifts from the frontend's needs. A shared "API team" will produce APIs too generic to serve any consumer well. The rule that the BFF is owned by the same team as the frontend surface (A2) is a direct consequence of this — [as Sam Newman notes](https://samnewman.io/patterns/architectural/bff/), BFF boundaries are ultimately driven by team structure, not technology.
+**[Conway's Law](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#conways-law) in practice:** If you draw team boundaries incorrectly, the architecture will follow. A separate "BFF team" will produce a BFF that drifts from the frontend's needs. A shared "API team" will produce APIs too generic to serve any consumer well. The rule that the BFF is owned by the same team as the frontend surface (A2) is a direct consequence of this — [as Sam Newman notes](https://samnewman.io/patterns/architectural/bff/), BFF boundaries are ultimately driven by team structure, not technology.
 
 ---
 
@@ -255,11 +255,11 @@ Once the BFF contract is established, frontend teams mock the BFF response and b
 ### E3 — Data at the Right Granularity
 BFFs must request only the data they need from domain APIs. Domain APIs must return only what is asked for. GraphQL field selection or sparse fieldsets in REST are the mechanisms. Over-fetching at the BFF-to-domain boundary creates hidden performance problems and couples the BFF to internal domain data shapes.
 
-### E4 — [Authentication](./definitions.md#authentication-vs-authorization) Is Centralized, [Authorization](./definitions.md#authentication-vs-authorization) Is Distributed
-A single Identity service issues [tokens](./definitions.md#token--auth-token). Each layer validates tokens independently — the BFF validates on behalf of the frontend, and domain services validate on inbound service-to-service calls. No layer trusts a caller simply because it came from inside the network.
+### E4 — [Authentication](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#authentication-vs-authorization) Is Centralized, [Authorization](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#authentication-vs-authorization) Is Distributed
+A single Identity service issues [tokens](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#token--auth-token). Each layer validates tokens independently — the BFF validates on behalf of the frontend, and domain services validate on inbound service-to-service calls. No layer trusts a caller simply because it came from inside the network.
 
-### E5 — [Fail Gracefully](./definitions.md#graceful-degradation--fail-gracefully), Not Silently
-BFFs implement [circuit breakers](./definitions.md#circuit-breaker) and fallback responses. Micro frontends handle partial failures (one widget fails, others still render). Domain services return structured error responses, never raw stack traces.
+### E5 — [Fail Gracefully](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#graceful-degradation--fail-gracefully), Not Silently
+BFFs implement [circuit breakers](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#circuit-breaker) and fallback responses. Micro frontends handle partial failures (one widget fails, others still render). Domain services return structured error responses, never raw stack traces.
 
 ### E6 — Versioning Is a First-Class Concern
 All APIs are versioned from day one. Breaking changes require a new version — not a silent modification to an existing endpoint. Deprecation timelines are communicated to consumers before old versions are removed.
@@ -287,7 +287,7 @@ Teams have freedom to choose their frontend framework within an approved set. [A
 [Do not create a shared component library before you have real-world usage data](https://martinfowler.com/articles/micro-frontends.html). Let teams build components within their own codebases first. When the same component pattern stabilizes across multiple micro frontends, harvest it into the shared library. Shared components must contain only UI logic — never business or domain logic. The shared library requires a named custodian responsible for quality and consistency.
 
 ### E12 — Each Micro Frontend Has Its Own Test Suite
-Each micro frontend maintains [unit tests](./definitions.md#unit-test) for business and rendering logic, and [integration tests](./definitions.md#integration-test) for its contract with the container. [End-to-end tests](./definitions.md#end-to-end-e2e-test) validate integration across micro frontends but are kept minimal ([test pyramid](./definitions.md#test-pyramid)). [Consumer-driven contract tests](https://martinfowler.com/articles/micro-frontends.html) validate the interface between micro frontends without requiring a fully integrated environment.
+Each micro frontend maintains [unit tests](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#unit-test) for business and rendering logic, and [integration tests](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#integration-test) for its contract with the container. [End-to-end tests](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#end-to-end-e2e-test) validate integration across micro frontends but are kept minimal ([test pyramid](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#test-pyramid)). [Consumer-driven contract tests](https://martinfowler.com/articles/micro-frontends.html) validate the interface between micro frontends without requiring a fully integrated environment.
 
 ---
 
@@ -361,7 +361,7 @@ Each micro frontend maintains [unit tests](./definitions.md#unit-test) for busin
 | One BFF for all frontend surfaces | Recreates a monolith; BFF accumulates conflicting concerns |
 | Domain API serving presentation-formatted data | Couples domain logic to a specific frontend; breaks composability |
 | Shared database between domain services | Creates hidden coupling; schema changes in one service break others |
-| "Headless" via retrofitted monolith | Hidden performance tax — [platforms silently render a full page and scrape the result before returning it via API](./api-vs-headless-commerce.md), adding latency while appearing headless; architectural debt compounds over time |
+| "Headless" via retrofitted monolith | Hidden performance tax — [platforms silently render a full page and scrape the result before returning it via API](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/api-vs-headless-commerce.md), adding latency while appearing headless; architectural debt compounds over time |
 | Skipping API contract review | Breaks parallel development; frontend and backend become tightly coordinated again |
 | Vendor-specific SDK calls in micro frontends | Lock-in at the presentation layer; replacing a vendor requires frontend rewrites |
 | [Build-time integration of micro frontends (npm packages)](https://martinfowler.com/articles/micro-frontends.html) | Any change to one MFE forces a full rebuild and redeploy of the container; recreates lockstep releases |
@@ -377,7 +377,7 @@ Each micro frontend maintains [unit tests](./definitions.md#unit-test) for busin
 
 | Source | URL | Key Contributions to This Document |
 |---|---|---|
-| Internal: API-First vs Retrofitted Platforms | [./api-vs-headless-commerce.md](./api-vs-headless-commerce.md) | Vocabulary definitions (API-first, headless, composable); billing and payments platform landscape; retrofitted platform anti-patterns; 7 guiding principles for platform evaluation |
+| Internal: API-First vs Retrofitted Platforms | [./api-vs-headless-commerce.md](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/api-vs-headless-commerce.md) | Vocabulary definitions (API-first, headless, composable); billing and payments platform landscape; retrofitted platform anti-patterns; 7 guiding principles for platform evaluation |
 | Contentful: What is a Headless API? | https://www.contentful.com/guides/api/headless-api/ | Composable architecture benefits; build vs. buy vs. assemble decision framing; platform independence; omnichannel delivery |
 | Varun Bansal: Headless, API-First, and Decoupled Architectures | https://medium.com/@vbansal0803/headless-api-first-and-decoupled-architectures-a-professional-guide-f2775e450279 | Contract-driven development (schema before code); API-first as an organizational discipline; headless content atomization; distributed debugging trade-offs |
 | Paragon: Why Organizations Should Build Custom APIs for a Headless CMS Experience | https://www.paragon-inc.com/content/post/why-organizations-should-build-custom-apis-for-a-headless-cms-experience | Vendor abstraction to prevent lock-in and messy re-platforming; security surface area reduction via custom APIs; rate limiting as a security layer |
