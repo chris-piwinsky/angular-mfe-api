@@ -97,7 +97,8 @@ export class AppComponent implements OnInit {
     const a = this.amount();
     const bill = this.billData();
     if (a <= 0) return 'Amount must be greater than 0.';
-    if (bill && a > bill.balance) return `Amount cannot exceed the balance of ${bill.balance}.`;
+    if (bill && a > bill.balance)
+      return `Amount cannot exceed the balance of ${bill.balance}.`;
     return null;
   });
 
@@ -168,7 +169,7 @@ export class AppComponent implements OnInit {
           window.dispatchEvent(
             new CustomEvent('suite:payment:submitted', {
               detail: { billId: this.billId(), amount: this.amount() },
-            })
+            }),
           );
         },
         error: (err) => {
@@ -176,10 +177,12 @@ export class AppComponent implements OnInit {
           if (err.status === 422) {
             const balance = err.error?.balance ?? this.billData()?.balance;
             this.balanceError.set(
-              `The amount entered exceeds the remaining balance of ${balance ? '$' + balance.toFixed(2) : 'the bill'}.`
+              `The amount entered exceeds the remaining balance of ${balance ? '$' + balance.toFixed(2) : 'the bill'}.`,
             );
           } else {
-            this.submitError.set('Payment could not be submitted. Please try again.');
+            this.submitError.set(
+              'Payment could not be submitted. Please try again.',
+            );
           }
         },
       });
@@ -191,4 +194,3 @@ export class AppComponent implements OnInit {
     window.dispatchEvent(new CustomEvent('suite:navigate:bills'));
   }
 }
-

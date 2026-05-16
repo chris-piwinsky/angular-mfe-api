@@ -14,10 +14,10 @@ describe('App', () => {
           provide: APP_CONFIG,
           useValue: {
             bffBaseUrl: 'http://localhost:3001',
-            authHeader: 'Bearer demo-token'
-          }
-        }
-      ]
+            authHeader: 'Bearer demo-token',
+          },
+        },
+      ],
     }).compileComponents();
   });
 

@@ -18,45 +18,45 @@ interface BillDetail {
 router.get('/bills', async (req: Request, res: Response) => {
   const { status, accountId, limit, offset } = req.query;
   const correlationId = res.locals.correlationId;
-  
+
   const params = new URLSearchParams();
   if (status) params.set('status', status as string);
   if (accountId) params.set('accountId', accountId as string);
   if (limit) params.set('limit', limit as string);
   if (offset) params.set('offset', offset as string);
-  
+
   const url = `${BILLS_API_URL}/v1/bills?${params}`;
-  
+
   try {
     const response = await fetch(url, {
-      headers: { 'x-correlation-id': correlationId }
+      headers: { 'x-correlation-id': correlationId },
     });
-    
+
     if (!response.ok) {
       res.status(502).json({
         error: 'Bills service unavailable',
-        requestId: correlationId
+        requestId: correlationId,
       });
       return;
     }
-    
+
     const responseData = await response.json();
     const bills: BillDetail[] = responseData.data || [];
-    
+
     // Reduce to partner payload: only billId, accountId, balance, dueDate, status
-    const reducedBills = bills.map(bill => ({
+    const reducedBills = bills.map((bill) => ({
       billId: bill.id,
       accountId: bill.accountId,
       balance: bill.balance,
       dueDate: bill.dueDate,
-      status: bill.status
+      status: bill.status,
     }));
-    
+
     res.json(reducedBills);
   } catch (error) {
     res.status(502).json({
       error: 'Bills service unavailable',
-      requestId: correlationId
+      requestId: correlationId,
     });
   }
 });
@@ -65,32 +65,32 @@ router.get('/bills', async (req: Request, res: Response) => {
 router.get('/bills/:id', async (req: Request, res: Response) => {
   const { id } = req.params;
   const correlationId = res.locals.correlationId;
-  
+
   const url = `${BILLS_API_URL}/v1/bills/${id}`;
-  
+
   try {
     const response = await fetch(url, {
-      headers: { 'x-correlation-id': correlationId }
+      headers: { 'x-correlation-id': correlationId },
     });
-    
+
     if (response.status === 404) {
       res.status(404).json({
         error: 'Bill not found',
-        requestId: correlationId
+        requestId: correlationId,
       });
       return;
     }
-    
+
     if (!response.ok) {
       res.status(502).json({
         error: 'Bills service unavailable',
-        requestId: correlationId
+        requestId: correlationId,
       });
       return;
     }
-    
+
     const bill: BillDetail = await response.json();
-    
+
     // Reduce to partner payload: only billId, accountId, balance, dueDate, status
     // Note: NO call to payments-api — partners don't see payment history
     const reducedBill = {
@@ -99,14 +99,14 @@ router.get('/bills/:id', async (req: Request, res: Response) => {
       balance: bill.balance,
       dueDate: bill.dueDate,
       status: bill.status,
-      requestId: correlationId
+      requestId: correlationId,
     };
-    
+
     res.json(reducedBill);
   } catch (error) {
     res.status(502).json({
       error: 'Bills service unavailable',
-      requestId: correlationId
+      requestId: correlationId,
     });
   }
 });

@@ -1,6 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { fetchBillById } from '../services/bills.service';
-import { fetchPaymentsForBill, submitPayment } from '../services/payments.service';
+import {
+  fetchPaymentsForBill,
+  submitPayment,
+} from '../services/payments.service';
 import { PaymentRequest } from '../types';
 
 export const paymentsRouter = Router();
@@ -20,7 +23,10 @@ paymentsRouter.get('/', async (req: Request, res: Response) => {
   }
 
   try {
-    const payments = await fetchPaymentsForBill(billId as string, correlationId);
+    const payments = await fetchPaymentsForBill(
+      billId as string,
+      correlationId,
+    );
     res.json({ data: payments, requestId: correlationId });
   } catch {
     res.status(502).json({
@@ -70,7 +76,10 @@ paymentsRouter.post('/', async (req: Request, res: Response) => {
 
   // Validate amount does not exceed remaining balance (BFF owns this rule)
   if (amount > bill.balance) {
-    res.setHeader('x-arch-note', 'A3:BALANCE-GUARD; amount <= balance validated at BFF; payments-api never received an invalid amount');
+    res.setHeader(
+      'x-arch-note',
+      'A3:BALANCE-GUARD; amount <= balance validated at BFF; payments-api never received an invalid amount',
+    );
     res.status(422).json({
       error: 'amount_exceeds_balance',
       message: `Amount exceeds the remaining balance of $${bill.balance.toFixed(2)}.`,
@@ -82,8 +91,14 @@ paymentsRouter.post('/', async (req: Request, res: Response) => {
 
   // Proxy to payments-api
   try {
-    const payment = await submitPayment({ billId, amount, method, maskedAccount }, correlationId);
-    res.setHeader('x-arch-note', 'A3:BFF-PROXY; payment validated and proxied; domain API did not re-validate business rules');
+    const payment = await submitPayment(
+      { billId, amount, method, maskedAccount },
+      correlationId,
+    );
+    res.setHeader(
+      'x-arch-note',
+      'A3:BFF-PROXY; payment validated and proxied; domain API did not re-validate business rules',
+    );
     res.status(201).json({ ...payment, requestId: correlationId });
   } catch {
     res.status(502).json({

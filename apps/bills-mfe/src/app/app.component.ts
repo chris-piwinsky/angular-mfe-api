@@ -1,4 +1,11 @@
-import { Component, signal, computed, inject, OnInit, isDevMode } from '@angular/core';
+import {
+  Component,
+  signal,
+  computed,
+  inject,
+  OnInit,
+  isDevMode,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { httpResource } from '@angular/common/http';
 import { APP_CONFIG } from '@billing-portal/shared/app-config';
@@ -123,7 +130,7 @@ export class AppComponent implements OnInit {
     event.stopPropagation();
     this.logArch('pay_now_clicked', { billId });
     window.dispatchEvent(
-      new CustomEvent('suite:navigate:pay', { detail: { billId } })
+      new CustomEvent('suite:navigate:pay', { detail: { billId } }),
     );
   }
 
@@ -131,4 +138,3 @@ export class AppComponent implements OnInit {
     return status === 'unpaid' || status === 'overdue' || status === 'partial';
   }
 }
-

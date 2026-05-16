@@ -2,10 +2,18 @@ import {
   ApplicationConfig,
   provideBrowserGlobalErrorListeners,
 } from '@angular/core';
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withFetch,
+  withInterceptors,
+} from '@angular/common/http';
 import { archGuardInterceptor } from './arch-guard.interceptor';
 import { archNoteInterceptor } from './arch-note.interceptor';
-import { provideRouter, ActivatedRoute, convertToParamMap } from '@angular/router';
+import {
+  provideRouter,
+  ActivatedRoute,
+  convertToParamMap,
+} from '@angular/router';
 import { APP_CONFIG } from '@billing-portal/shared/app-config';
 
 // Mock ActivatedRoute for standalone dev mode — provides billId='bill-001'
@@ -18,7 +26,10 @@ const mockActivatedRoute = {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideHttpClient(withFetch(), withInterceptors([archGuardInterceptor, archNoteInterceptor])),
+    provideHttpClient(
+      withFetch(),
+      withInterceptors([archGuardInterceptor, archNoteInterceptor]),
+    ),
     provideRouter([]),
     // Override ActivatedRoute for standalone dev mode
     { provide: ActivatedRoute, useValue: mockActivatedRoute },

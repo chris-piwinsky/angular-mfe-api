@@ -1,0 +1,37 @@
+<section class="standards-page">
+  <header class="page-header">
+    <h1>Architecture Standards</h1>
+    <p>
+      Local reference view for architecture principles used by the
+      <strong>⚡ Arch</strong> panel.
+    </p>
+  </header>
+
+  <nav class="toc" aria-label="Standards table of contents">
+    @for (standard of standards; track standard.code) {
+      <a [href]="'#' + standard.anchor"
+        >{{ standard.code }} — {{ standard.title }}</a
+      >
+    }
+  </nav>
+
+  <div class="standards-list">
+    @for (standard of standards; track standard.code) {
+      <article class="standard-card" [id]="standard.anchor">
+        <header class="standard-header">
+          <span class="standard-code">{{ standard.code }}</span>
+          <h2>{{ standard.title }}</h2>
+        </header>
+        <p class="summary">{{ standard.summary }}</p>
+        <a
+          class="details-link"
+          [href]="standardsDocSectionUrl(standard.anchor)"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open full section details →
+        </a>
+      </article>
+    }
+  </div>
+</section>

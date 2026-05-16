@@ -3,6 +3,7 @@
 Each diagram traces a user interaction from browser to backend, showing every service hop and the pattern that governs it. Ports match the [local dev port assignments](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/README.md#port-reference).
 
 **Layer color key used in diagrams:**
+
 - Browser / user action
 - `shell-app :4200` — host shell (routing, events, badge)
 - `bills-mfe :4201` — Bills micro frontend
@@ -271,15 +272,15 @@ flowchart TD
 
 ## Pattern Summary
 
-| Flow | Pattern | Standard |
-|------|---------|----------|
-| Shell loads MFEs at runtime | Module Federation via `loadRemoteModule()` | A2, A9 |
-| MFEs call BFF only | `bffBaseUrl/api/*` — never `localhost:4001` | A3 |
-| Auth validated at BFF | Bearer token checked before any domain call | E4 |
-| Bill detail merges two APIs | `Promise.allSettled` in BFF route | E3 |
-| Payments-api down → `payments: []` | try/catch in BFF, not 500 | E5 |
-| Balance guard at BFF | `amount <= bill.balance` in BFF route only | A3 |
-| Cross-MFE navigation | `suite:navigate:pay` CustomEvent on `window` | A9 |
-| Badge refresh on payment | `suite:payment:submitted` CustomEvent on `window` | A9 |
-| Correlation ID on every request | `x-correlation-id` generated/propagated by middleware | A8, E10 |
-| BFF response envelope | `{ data, requestId }` — MFEs unwrap with computed signal | E5 |
+| Flow                               | Pattern                                                  | Standard |
+| ---------------------------------- | -------------------------------------------------------- | -------- |
+| Shell loads MFEs at runtime        | Module Federation via `loadRemoteModule()`               | A2, A9   |
+| MFEs call BFF only                 | `bffBaseUrl/api/*` — never `localhost:4001`              | A3       |
+| Auth validated at BFF              | Bearer token checked before any domain call              | E4       |
+| Bill detail merges two APIs        | `Promise.allSettled` in BFF route                        | E3       |
+| Payments-api down → `payments: []` | try/catch in BFF, not 500                                | E5       |
+| Balance guard at BFF               | `amount <= bill.balance` in BFF route only               | A3       |
+| Cross-MFE navigation               | `suite:navigate:pay` CustomEvent on `window`             | A9       |
+| Badge refresh on payment           | `suite:payment:submitted` CustomEvent on `window`        | A9       |
+| Correlation ID on every request    | `x-correlation-id` generated/propagated by middleware    | A8, E10  |
+| BFF response envelope              | `{ data, requestId }` — MFEs unwrap with computed signal | E5       |

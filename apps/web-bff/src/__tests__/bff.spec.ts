@@ -8,10 +8,20 @@ jest.mock('../services/payments.service');
 import * as billsService from '../services/bills.service';
 import * as paymentsService from '../services/payments.service';
 
-const mockedFetchBills = billsService.fetchBills as jest.MockedFunction<typeof billsService.fetchBills>;
-const mockedFetchBillById = billsService.fetchBillById as jest.MockedFunction<typeof billsService.fetchBillById>;
-const mockedFetchPaymentsForBill = paymentsService.fetchPaymentsForBill as jest.MockedFunction<typeof paymentsService.fetchPaymentsForBill>;
-const mockedSubmitPayment = paymentsService.submitPayment as jest.MockedFunction<typeof paymentsService.submitPayment>;
+const mockedFetchBills = billsService.fetchBills as jest.MockedFunction<
+  typeof billsService.fetchBills
+>;
+const mockedFetchBillById = billsService.fetchBillById as jest.MockedFunction<
+  typeof billsService.fetchBillById
+>;
+const mockedFetchPaymentsForBill =
+  paymentsService.fetchPaymentsForBill as jest.MockedFunction<
+    typeof paymentsService.fetchPaymentsForBill
+  >;
+const mockedSubmitPayment =
+  paymentsService.submitPayment as jest.MockedFunction<
+    typeof paymentsService.submitPayment
+  >;
 
 const app = createApp();
 
@@ -102,7 +112,9 @@ describe('GET /api/bills/:id', () => {
 
   it('returns bill with payments: [] when payments-api is down (graceful degradation)', async () => {
     mockedFetchBillById.mockResolvedValue(mockBill);
-    mockedFetchPaymentsForBill.mockRejectedValue(new Error('payments-api down'));
+    mockedFetchPaymentsForBill.mockRejectedValue(
+      new Error('payments-api down'),
+    );
 
     const res = await request(app)
       .get('/api/bills/bill-001')
@@ -124,7 +136,12 @@ describe('POST /api/payments — balance validation', () => {
     const res = await request(app)
       .post('/api/payments')
       .set('Authorization', 'Bearer demo-token')
-      .send({ billId: 'bill-001', amount: 200.0, method: 'card', maskedAccount: '••••4242' });
+      .send({
+        billId: 'bill-001',
+        amount: 200.0,
+        method: 'card',
+        maskedAccount: '••••4242',
+      });
 
     expect(res.status).toBe(422);
     expect(res.body.error).toBe('amount_exceeds_balance');
@@ -138,7 +155,12 @@ describe('POST /api/payments — balance validation', () => {
     const res = await request(app)
       .post('/api/payments')
       .set('Authorization', 'Bearer demo-token')
-      .send({ billId: 'bill-001', amount: 100.0, method: 'card', maskedAccount: '••••4242' });
+      .send({
+        billId: 'bill-001',
+        amount: 100.0,
+        method: 'card',
+        maskedAccount: '••••4242',
+      });
 
     expect(res.status).toBe(201);
     expect(res.body.id).toBe('pay-001');
@@ -152,7 +174,12 @@ describe('POST /api/payments — balance validation', () => {
     const res = await request(app)
       .post('/api/payments')
       .set('Authorization', 'Bearer demo-token')
-      .send({ billId: 'unknown-bill', amount: 50.0, method: 'card', maskedAccount: '••••4242' });
+      .send({
+        billId: 'unknown-bill',
+        amount: 50.0,
+        method: 'card',
+        maskedAccount: '••••4242',
+      });
 
     expect(res.status).toBe(404);
     expect(res.body.error).toBe('bill_not_found');

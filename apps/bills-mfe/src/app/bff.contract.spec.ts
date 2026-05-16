@@ -107,7 +107,12 @@ describe('BFF contract — GET /api/bills/:id (detail)', () => {
       status: 'unpaid',
       requestId: 'abc-123',
       lineItems: [
-        { description: 'Service fee', quantity: 1, unitPrice: 300.0, lineTotal: 300.0 },
+        {
+          description: 'Service fee',
+          quantity: 1,
+          unitPrice: 300.0,
+          lineTotal: 300.0,
+        },
       ],
       payments: [
         {

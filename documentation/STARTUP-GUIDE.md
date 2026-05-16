@@ -14,7 +14,14 @@ npm install
 
 ## Start the Full Application
 
-Run each service in a separate terminal tab/window.
+Quickest path for demos:
+
+```bash
+./start-all.sh
+./health-check.sh --wait
+```
+
+If you prefer manual startup, run each service in a separate terminal tab/window.
 
 ```bash
 # Terminal 1 - bills-api
@@ -54,6 +61,18 @@ After startup, wait about 60 seconds and open:
 
 - http://localhost:4200
 
+## Turn On Architecture Insights First
+
+After the shell loads, click the **⚡ Arch** button in the top-right navigation.
+
+This panel is the teaching overlay for the demo. As you click through flows, it explains which principle is active (A2/A3/A9/E3/E4/E5/E10) and shows request IDs that map to backend logs.
+
+When you click a standards link from the panel, it now opens the local standards page route at `/architecture/standards#<section>`.
+
+Recommended next step after startup:
+
+- [documentation/DEMO-WALKTHROUGH.md](./DEMO-WALKTHROUGH.md)
+
 ## Verify Health (Optional)
 
 Run the included health check script:
@@ -61,6 +80,32 @@ Run the included health check script:
 ```bash
 ./health-check.sh
 ```
+
+Wait until all services are healthy (default 60 seconds):
+
+```bash
+./health-check.sh --wait
+```
+
+Verbose wait output:
+
+```bash
+./health-check.sh --wait=120 --verbose
+```
+
+## Dependency Matrix
+
+Use this to decide whether you need the full stack for a specific demo.
+
+| Service      | Can run solo? | Requires                        | Best use                                  |
+| ------------ | ------------- | ------------------------------- | ----------------------------------------- |
+| bills-api    | Yes           | None                            | Domain API behavior and contract checks   |
+| payments-api | Yes           | None                            | Payment domain API behavior               |
+| web-bff      | No            | bills-api, payments-api         | Aggregation, auth boundary, balance guard |
+| partner-bff  | No            | bills-api, payments-api         | A2 comparison with web-bff                |
+| bills-mfe    | Partial       | web-bff recommended             | Bills UI behavior and BFF contract        |
+| payment-mfe  | Partial       | web-bff recommended             | Payment UI flow and BFF validation        |
+| shell-app    | No            | web-bff, bills-mfe, payment-mfe | End-to-end host + MFE event flow          |
 
 ## Project Overview UI (Nx)
 
@@ -118,3 +163,82 @@ Use it if:
 - Ctrl+C did not stop everything
 - You see port already in use errors
 - You suspect orphaned processes from a previous run
+
+## Troubleshooting
+
+### Port Already in Use
+
+Symptom: `EADDRINUSE` on one of the known ports.
+
+Fix:
+
+```bash
+./stop-all.sh
+./start-all.sh
+```
+
+### Service Appears Up but Flow Fails
+
+Symptom: Shell loads, but API calls fail or MFEs do not render data.
+
+Fix:
+
+```bash
+./health-check.sh --wait --verbose
+```
+
+Confirm all 7 services return healthy before re-testing in browser.
+
+### Remote Module Load Failure in Browser
+
+Symptom: shell renders but one remote fails to load.
+
+Fix:
+
+1. Ensure `bills-mfe` and `payment-mfe` are both running.
+2. Re-run `./health-check.sh --wait`.
+3. Refresh browser after both remotes are confirmed healthy.
+
+### Script Permission Denied
+
+Symptom: `Permission denied` running scripts.
+
+Fix:
+
+```bash
+chmod +x health-check.sh stop-all.sh start-all.sh
+```
+
+### Standards Links Show 404 or Open Wrong Page
+
+Symptom: Clicking a standards link from ⚡ Arch does not land on the local standards section.
+
+Fix:
+
+1. Open `http://localhost:4200/architecture/standards` directly to verify shell route availability.
+2. Refresh shell and click ⚡ Arch again.
+3. Ensure shell-app is running on port 4200 and not an old dev server instance.
+
+### Auth Boundary Triggered (401)
+
+Symptom: Requests to web-bff return 401.
+
+Fix:
+
+1. Confirm shell-app is injecting `Authorization: Bearer demo-token`.
+2. Do not call web-bff browser routes directly without auth headers.
+3. Use the shell flow for normal demos so auth header injection is automatic.
+
+### TypeScript 6 Upgrade Fails (ERESOLVE)
+
+Symptom: `npm install` fails with peer dependency errors when upgrading to TypeScript 6.
+
+Cause:
+
+- Current Angular build tooling in this workspace (`@angular-devkit/build-angular` 21.2.x) requires TypeScript `< 6.0`.
+
+Fix:
+
+1. Keep TypeScript on 5.9.x for now.
+2. Keep `ignoreDeprecations` at `5.0` in `tsconfig.base.json`.
+3. Revisit TypeScript 6 only after Angular build tooling in your registry supports it.

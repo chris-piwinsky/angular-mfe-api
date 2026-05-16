@@ -1,7 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import {
+  provideHttpClientTesting,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { of } from 'rxjs';
@@ -65,7 +68,7 @@ describe('AppComponent (payment-mfe)', () => {
 
   it('validates amount must be > 0', () => {
     component.amountTouched.set(true);
-    
+
     component.amount.set(0);
     expect(component.amountError()).toBeTruthy();
 
@@ -78,7 +81,7 @@ describe('AppComponent (payment-mfe)', () => {
 
   it('validates last4 must be exactly 4 digits', () => {
     component.last4Touched.set(true);
-    
+
     component.last4.set('abc');
     expect(component.last4Error()).toBeTruthy();
 
@@ -94,7 +97,7 @@ describe('AppComponent (payment-mfe)', () => {
     component.amount.set(100);
     component.last4.set('1234');
     component.method.set('card');
-    
+
     // Without a loaded bill, formValid returns false
     expect(component.formValid()).toBeFalsy();
   });
@@ -104,7 +107,7 @@ describe('AppComponent (payment-mfe)', () => {
     component.amount.set(100.0);
     component.method.set('card');
     component.last4.set('4242');
-    
+
     expect(component.confirmation()).toBeNull();
   });
 });

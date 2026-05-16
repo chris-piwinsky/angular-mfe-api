@@ -127,7 +127,17 @@ components:
 
     Payment:
       type: object
-      required: [id, billId, amount, method, maskedAccount, status, createdAt, requestId]
+      required:
+        [
+          id,
+          billId,
+          amount,
+          method,
+          maskedAccount,
+          status,
+          createdAt,
+          requestId,
+        ]
       properties:
         id:
           type: string

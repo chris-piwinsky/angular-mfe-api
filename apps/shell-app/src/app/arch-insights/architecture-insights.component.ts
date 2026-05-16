@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, computed } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ArchitectureInsightsService } from './architecture-insights.service';
 
@@ -23,7 +23,9 @@ import { ArchitectureInsightsService } from './architecture-insights.service';
 
         <div class="arch-content">
           @if (insightsService.events().length === 0) {
-            <p class="empty-state">Interact with the app to see architecture events.</p>
+            <p class="empty-state">
+              Interact with the app to see architecture events.
+            </p>
           } @else {
             @for (event of insightsService.events(); track event.timestamp) {
               <div class="arch-event-card">
@@ -46,8 +48,12 @@ import { ArchitectureInsightsService } from './architecture-insights.service';
                   </a>
                 }
                 <div class="event-footer">
-                  <code class="request-id">{{ truncateRequestId(event.requestId) }}</code>
-                  <span class="timestamp">{{ formatTimestamp(event.timestamp) }}</span>
+                  <code class="request-id">{{
+                    truncateRequestId(event.requestId)
+                  }}</code>
+                  <span class="timestamp">{{
+                    formatTimestamp(event.timestamp)
+                  }}</span>
                 </div>
               </div>
             }
@@ -208,7 +214,7 @@ import { ArchitectureInsightsService } from './architecture-insights.service';
   `,
 })
 export class ArchitectureInsightsComponent {
-  constructor(protected insightsService: ArchitectureInsightsService) {}
+  protected insightsService = inject(ArchitectureInsightsService);
 
   getPrincipleMetadata(code: string) {
     return this.insightsService.getPrincipleMetadata(code);

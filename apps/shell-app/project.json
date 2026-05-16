@@ -50,9 +50,7 @@
     },
     "esbuild": {
       "executor": "@angular/build:application",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/shell-app",
         "browser": "apps/shell-app/src/main.ts",
@@ -63,12 +61,8 @@
             "input": "apps/shell-app/public"
           }
         ],
-        "styles": [
-          "apps/shell-app/src/styles.css"
-        ],
-        "polyfills": [
-          "es-module-shims"
-        ]
+        "styles": ["apps/shell-app/src/styles.css"],
+        "polyfills": ["es-module-shims"]
       },
       "configurations": {
         "production": {

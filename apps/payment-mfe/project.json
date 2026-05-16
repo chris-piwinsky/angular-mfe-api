@@ -52,9 +52,7 @@
     },
     "esbuild": {
       "executor": "@angular/build:application",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/payment-mfe",
         "browser": "apps/payment-mfe/src/main.ts",
@@ -65,12 +63,8 @@
             "input": "apps/payment-mfe/public"
           }
         ],
-        "styles": [
-          "apps/payment-mfe/src/styles.css"
-        ],
-        "polyfills": [
-          "es-module-shims"
-        ]
+        "styles": ["apps/payment-mfe/src/styles.css"],
+        "polyfills": ["es-module-shims"]
       },
       "configurations": {
         "production": {

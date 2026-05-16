@@ -6,7 +6,7 @@ export const payments: Payment[] = [
   {
     id: randomUUID(),
     billId: 'bill-001',
-    amount: 100.00,
+    amount: 100.0,
     method: 'card',
     maskedAccount: '••••4242',
     status: 'completed',
@@ -16,7 +16,7 @@ export const payments: Payment[] = [
   {
     id: randomUUID(),
     billId: 'bill-001',
-    amount: 75.50,
+    amount: 75.5,
     method: 'ach',
     maskedAccount: '••••8832',
     status: 'completed',
@@ -26,7 +26,7 @@ export const payments: Payment[] = [
   {
     id: randomUUID(),
     billId: 'bill-001',
-    amount: 50.00,
+    amount: 50.0,
     method: 'card',
     maskedAccount: '••••1234',
     status: 'completed',

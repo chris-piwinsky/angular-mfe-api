@@ -38,7 +38,10 @@ export class App implements OnInit, OnDestroy {
   }
 
   private paymentHandler = (event: Event) => {
-    const customEvent = event as CustomEvent<{ billId?: string; amount?: number }>;
+    const customEvent = event as CustomEvent<{
+      billId?: string;
+      amount?: number;
+    }>;
     this.logArch('suite:payment:submitted:received', {
       billId: customEvent.detail?.billId,
       amount: customEvent.detail?.amount,
@@ -47,7 +50,8 @@ export class App implements OnInit, OnDestroy {
     // Push synthetic arch event for payment:submitted
     this.insightsService.push({
       code: 'A9:MFE-EVENT',
-      description: 'payment-mfe dispatched suite:payment:submitted — shell refreshing overdue count without a full reload',
+      description:
+        'payment-mfe dispatched suite:payment:submitted — shell refreshing overdue count without a full reload',
       layer: 'mfe',
       requestId: 'shell',
       timestamp: Date.now(),
@@ -67,7 +71,8 @@ export class App implements OnInit, OnDestroy {
     // Push synthetic arch event for navigate:pay
     this.insightsService.push({
       code: 'A9:MFE-EVENT',
-      description: 'bills-mfe dispatched suite:navigate:pay via CustomEvent — MFEs never import each other directly',
+      description:
+        'bills-mfe dispatched suite:navigate:pay via CustomEvent — MFEs never import each other directly',
       layer: 'mfe',
       requestId: 'shell',
       timestamp: Date.now(),
@@ -80,7 +85,8 @@ export class App implements OnInit, OnDestroy {
 
     this.insightsService.push({
       code: 'A9:MFE-EVENT',
-      description: 'payment-mfe dispatched suite:navigate:bills via CustomEvent — shell routed back to bills list',
+      description:
+        'payment-mfe dispatched suite:navigate:bills via CustomEvent — shell routed back to bills list',
       layer: 'mfe',
       requestId: 'shell',
       timestamp: Date.now(),
@@ -102,7 +108,8 @@ export class App implements OnInit, OnDestroy {
     // Push initial load synthetic event
     this.insightsService.push({
       code: 'A2:MODULE-FED',
-      description: 'shell loaded: bills-mfe and payment-mfe resolved at runtime via loadRemoteModule() — not npm dependencies',
+      description:
+        'shell loaded: bills-mfe and payment-mfe resolved at runtime via loadRemoteModule() — not npm dependencies',
       layer: 'mfe',
       requestId: 'shell',
       timestamp: Date.now(),
@@ -119,17 +126,19 @@ export class App implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     window.removeEventListener('suite:payment:submitted', this.paymentHandler);
     window.removeEventListener('suite:navigate:pay', this.navigatePayHandler);
-    window.removeEventListener('suite:navigate:bills', this.navigateBillsHandler);
+    window.removeEventListener(
+      'suite:navigate:bills',
+      this.navigateBillsHandler,
+    );
     window.removeEventListener('suite:arch:event', this.archEventHandler);
   }
 
   private fetchOverdueCount(): void {
     const headers = new HttpHeaders({ Authorization: this.config.authHeader });
     this.http
-      .get<{ data: unknown[] }>(
-        `${this.config.bffBaseUrl}/api/bills?status=overdue`,
-        { headers }
-      )
+      .get<{
+        data: unknown[];
+      }>(`${this.config.bffBaseUrl}/api/bills?status=overdue`, { headers })
       .subscribe({
         next: (res) => this.overdueCount.set(res.data.length),
         error: () => this.overdueCount.set(0),

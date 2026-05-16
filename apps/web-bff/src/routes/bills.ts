@@ -10,13 +10,19 @@ billsRouter.get('/', async (req: Request, res: Response) => {
 
   try {
     const params = new URLSearchParams();
-    if (req.query['status']) params.set('status', req.query['status'] as string);
-    if (req.query['accountId']) params.set('accountId', req.query['accountId'] as string);
+    if (req.query['status'])
+      params.set('status', req.query['status'] as string);
+    if (req.query['accountId'])
+      params.set('accountId', req.query['accountId'] as string);
     if (req.query['limit']) params.set('limit', req.query['limit'] as string);
-    if (req.query['offset']) params.set('offset', req.query['offset'] as string);
+    if (req.query['offset'])
+      params.set('offset', req.query['offset'] as string);
 
     const bills = await fetchBills(params, correlationId);
-    res.setHeader('x-arch-note', 'A3:BFF-PROXY; bills-api proxied; MFE never calls domain APIs directly');
+    res.setHeader(
+      'x-arch-note',
+      'A3:BFF-PROXY; bills-api proxied; MFE never calls domain APIs directly',
+    );
     res.json({ data: bills, requestId: correlationId });
   } catch {
     res.status(502).json({
@@ -64,14 +70,20 @@ billsRouter.get('/:id', async (req: Request, res: Response) => {
         event: 'payments_api_unavailable',
         billId: req.params.id,
         correlationId,
-      }) + '\n'
+      }) + '\n',
     );
   }
 
   if (paymentsApiDown) {
-    res.setHeader('x-arch-note', 'E5:GRACEFUL-DEGRADE; payments-api unavailable; returned payments:[] without failing the bill response');
+    res.setHeader(
+      'x-arch-note',
+      'E5:GRACEFUL-DEGRADE; payments-api unavailable; returned payments:[] without failing the bill response',
+    );
   } else {
-    res.setHeader('x-arch-note', 'E3:BFF-AGGREGATE; 1 BFF call -> bills-api + payments-api merged into single response');
+    res.setHeader(
+      'x-arch-note',
+      'E3:BFF-AGGREGATE; 1 BFF call -> bills-api + payments-api merged into single response',
+    );
   }
 
   // Keep response shape consistent with other BFF endpoints.

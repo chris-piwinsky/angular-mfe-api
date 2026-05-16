@@ -52,9 +52,7 @@
     },
     "esbuild": {
       "executor": "@angular/build:application",
-      "outputs": [
-        "{options.outputPath}"
-      ],
+      "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/apps/bills-mfe",
         "browser": "apps/bills-mfe/src/main.ts",
@@ -65,12 +63,8 @@
             "input": "apps/bills-mfe/public"
           }
         ],
-        "styles": [
-          "apps/bills-mfe/src/styles.css"
-        ],
-        "polyfills": [
-          "es-module-shims"
-        ]
+        "styles": ["apps/bills-mfe/src/styles.css"],
+        "polyfills": ["es-module-shims"]
       },
       "configurations": {
         "production": {

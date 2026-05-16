@@ -22,7 +22,8 @@ export const archNoteInterceptor: HttpInterceptorFn = (req, next) => {
         const archNote = event.headers.get('x-arch-note');
         if (archNote) {
           const [code, description] = archNote.split('|');
-          const requestId = (event.body as { requestId?: string })?.requestId || 'unknown';
+          const requestId =
+            (event.body as { requestId?: string })?.requestId || 'unknown';
 
           logArch({ code, description, requestId });
 
@@ -35,10 +36,10 @@ export const archNoteInterceptor: HttpInterceptorFn = (req, next) => {
                 timestamp: Date.now(),
                 layer: 'bff',
               },
-            })
+            }),
           );
         }
       }
-    })
+    }),
   );
 };

@@ -40,7 +40,8 @@ describe('GET /v1/bills', () => {
     const res = await request(app).get('/v1/bills');
 
     for (const bill of res.body.data) {
-      const expected = Math.round((bill.totalAmount - bill.amountPaid) * 100) / 100;
+      const expected =
+        Math.round((bill.totalAmount - bill.amountPaid) * 100) / 100;
       expect(bill.balance).toBeCloseTo(expected, 5);
     }
   });

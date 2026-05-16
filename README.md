@@ -4,6 +4,19 @@
 
 This is a reference application demonstrating the three-layer architecture (Angular micro front ends → Express BFF → Express domain APIs) documented in [suite-architecture-standards.md](documentation/suite-architecture-standards.md). It is intentionally minimal. Its purpose is to demonstrate the architecture correctly, not to build production payment infrastructure. Every architectural principle from A1 through E12 is implemented and visible in the running app. The **⚡ Arch** panel narrates architectural decisions in real-time as you use the application.
 
+This repository is the completed reference implementation from the workspace prompt sequence. Treat it as a runnable teaching app first, then a codebase to inspect.
+
+## Quick Start Path (30 Minutes)
+
+Use this order for first-time teams:
+
+1. [documentation/STARTUP-GUIDE.md](documentation/STARTUP-GUIDE.md) — Start all services and verify health.
+2. [documentation/DEMO-WALKTHROUGH.md](documentation/DEMO-WALKTHROUGH.md) — Follow the presenter script through the happy path.
+3. [documentation/NAVIGATION-FLOWS.md](documentation/NAVIGATION-FLOWS.md) — Map each click to service hops and principles.
+4. [README Guided Walkthrough](#guided-walkthrough) — Inspect the exact code files behind each step.
+5. [documentation/PARTNER-BFF-A2-DEMO.md](documentation/PARTNER-BFF-A2-DEMO.md) — Compare web-bff vs partner-bff behavior.
+6. [documentation/principles.md](documentation/principles.md) and [documentation/suite-architecture-standards.md](documentation/suite-architecture-standards.md) — Deep architecture rationale.
+
 ---
 
 ## Architecture at a Glance
@@ -20,17 +33,26 @@ partner-bff (Express + TypeScript, port 3002) ← B2B Partner surface
 
 **Two surfaces → Two BFFs → Same domain APIs.** See [PARTNER-BFF-A2-DEMO.md](documentation/PARTNER-BFF-A2-DEMO.md) for side-by-side comparisons showing different auth, response shapes, and payment patterns for the same underlying bill data.
 
+### Why Two BFFs?
+
+This demo intentionally applies [A2](documentation/suite-architecture-standards.md#a2): BFF per surface, not per service.
+
+- `web-bff` (3001): web UI focused, Bearer auth, richer payloads for browser rendering.
+- `partner-bff` (3002): partner integration focused, API key auth, reduced payloads and callback patterns.
+
+Both target the same domain APIs. The split is by consumer experience, not by domain duplication.
+
 ### Port Reference
 
-| App          | Port | Layer         | Surface                          |
-|--------------|------|---------------|----------------------------------|
-| shell-app    | 4200 | Presentation  | Web UI                           |
-| bills-mfe    | 4201 | Presentation  | Web UI                           |
-| payment-mfe  | 4202 | Presentation  | Web UI                           |
-| web-bff      | 3001 | Orchestration | Web UI (Bearer token)            |
-| partner-bff  | 3002 | Orchestration | B2B Partner Integration (API key)|
-| bills-api    | 4001 | Domain        | Headless (internal only)         |
-| payments-api | 4002 | Domain        | Headless (internal only)         |
+| App          | Port | Layer         | Surface                           |
+| ------------ | ---- | ------------- | --------------------------------- |
+| shell-app    | 4200 | Presentation  | Web UI                            |
+| bills-mfe    | 4201 | Presentation  | Web UI                            |
+| payment-mfe  | 4202 | Presentation  | Web UI                            |
+| web-bff      | 3001 | Orchestration | Web UI (Bearer token)             |
+| partner-bff  | 3002 | Orchestration | B2B Partner Integration (API key) |
+| bills-api    | 4001 | Domain        | Headless (internal only)          |
+| payments-api | 4002 | Domain        | Headless (internal only)          |
 
 ### Vertical Domain Ownership
 
@@ -49,6 +71,17 @@ Use the dedicated startup walkthrough:
 
 - [STARTUP-GUIDE.md](documentation/STARTUP-GUIDE.md) — prerequisites, terminal commands for all 7 services, health checks, and stop procedures
 
+Fast path for demos:
+
+```bash
+./start-all.sh
+./health-check.sh --wait
+```
+
+Then open `http://localhost:4200`, click **⚡ Arch**, and begin [documentation/DEMO-WALKTHROUGH.md](documentation/DEMO-WALKTHROUGH.md).
+
+Standards links from ⚡ Arch resolve to the local shell route `http://localhost:4200/architecture/standards#<section>` so details are available in-app during demos.
+
 ---
 
 ## Project Structure
@@ -65,74 +98,74 @@ See [TEST-RESULTS.md](documentation/TEST-RESULTS.md) for full test documentation
 
 ### Layer 1 — Micro Front ends
 
-| File | Description |
-|------|-------------|
-| [apps/shell-app/src/app/app.ts](apps/shell-app/src/app/app.ts) | Shell host: global layout, routing, event listeners |
-| [apps/shell-app/src/app/app.routes.ts](apps/shell-app/src/app/app.routes.ts) | loadRemoteModule() routes for bills-mfe and payment-mfe |
-| [apps/shell-app/src/app/arch-insights/architecture-insights.service.ts](apps/shell-app/src/app/arch-insights/architecture-insights.service.ts) | Architecture Insights signal store |
-| [apps/shell-app/src/app/arch-insights/architecture-insights.component.ts](apps/shell-app/src/app/arch-insights/architecture-insights.component.ts) | Architecture Insights Panel component |
-| [apps/bills-mfe/src/app/app.component.ts](apps/bills-mfe/src/app/app.component.ts) | Bills list and bill detail views; `bills` and `billDetail` are `httpResource` typed to the BFF envelope (`{ data, requestId }`); `billsData` and `billDetailData` are computed signals that unwrap the `data` array/object for template iteration |
-| [apps/bills-mfe/src/app/arch-guard.interceptor.ts](apps/bills-mfe/src/app/arch-guard.interceptor.ts) | HTTP interceptor — warns on direct domain API calls (Prompt 9) |
-| [apps/bills-mfe/src/app/arch-note.interceptor.ts](apps/bills-mfe/src/app/arch-note.interceptor.ts) | HTTP interceptor — reads x-arch-note header, emits suite:arch:event (Prompt 11) |
-| [apps/bills-mfe/src/app/app.config.ts](apps/bills-mfe/src/app/app.config.ts) | Standalone bootstrap config — provides APP_CONFIG dev defaults; no shell required |
-| [apps/payment-mfe/src/app/app.component.ts](apps/payment-mfe/src/app/app.component.ts) | Payment form and confirmation view |
-| [apps/payment-mfe/src/app/arch-guard.interceptor.ts](apps/payment-mfe/src/app/arch-guard.interceptor.ts) | HTTP interceptor — warns on direct domain API calls |
-| [apps/payment-mfe/src/app/arch-note.interceptor.ts](apps/payment-mfe/src/app/arch-note.interceptor.ts) | HTTP interceptor — reads x-arch-note header, emits suite:arch:event |
-| [apps/payment-mfe/src/app/app.config.ts](apps/payment-mfe/src/app/app.config.ts) | Standalone bootstrap config — provides APP_CONFIG dev defaults |
+| File                                                                                                                                               | Description                                                                                                                                                                                                                                       |
+| -------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [apps/shell-app/src/app/app.ts](apps/shell-app/src/app/app.ts)                                                                                     | Shell host: global layout, routing, event listeners                                                                                                                                                                                               |
+| [apps/shell-app/src/app/app.routes.ts](apps/shell-app/src/app/app.routes.ts)                                                                       | loadRemoteModule() routes for bills-mfe and payment-mfe                                                                                                                                                                                           |
+| [apps/shell-app/src/app/arch-insights/architecture-insights.service.ts](apps/shell-app/src/app/arch-insights/architecture-insights.service.ts)     | Architecture Insights signal store                                                                                                                                                                                                                |
+| [apps/shell-app/src/app/arch-insights/architecture-insights.component.ts](apps/shell-app/src/app/arch-insights/architecture-insights.component.ts) | Architecture Insights Panel component                                                                                                                                                                                                             |
+| [apps/bills-mfe/src/app/app.component.ts](apps/bills-mfe/src/app/app.component.ts)                                                                 | Bills list and bill detail views; `bills` and `billDetail` are `httpResource` typed to the BFF envelope (`{ data, requestId }`); `billsData` and `billDetailData` are computed signals that unwrap the `data` array/object for template iteration |
+| [apps/bills-mfe/src/app/arch-guard.interceptor.ts](apps/bills-mfe/src/app/arch-guard.interceptor.ts)                                               | HTTP interceptor — warns on direct domain API calls (Prompt 9)                                                                                                                                                                                    |
+| [apps/bills-mfe/src/app/arch-note.interceptor.ts](apps/bills-mfe/src/app/arch-note.interceptor.ts)                                                 | HTTP interceptor — reads x-arch-note header, emits suite:arch:event (Prompt 11)                                                                                                                                                                   |
+| [apps/bills-mfe/src/app/app.config.ts](apps/bills-mfe/src/app/app.config.ts)                                                                       | Standalone bootstrap config — provides APP_CONFIG dev defaults; no shell required                                                                                                                                                                 |
+| [apps/payment-mfe/src/app/app.component.ts](apps/payment-mfe/src/app/app.component.ts)                                                             | Payment form and confirmation view                                                                                                                                                                                                                |
+| [apps/payment-mfe/src/app/arch-guard.interceptor.ts](apps/payment-mfe/src/app/arch-guard.interceptor.ts)                                           | HTTP interceptor — warns on direct domain API calls                                                                                                                                                                                               |
+| [apps/payment-mfe/src/app/arch-note.interceptor.ts](apps/payment-mfe/src/app/arch-note.interceptor.ts)                                             | HTTP interceptor — reads x-arch-note header, emits suite:arch:event                                                                                                                                                                               |
+| [apps/payment-mfe/src/app/app.config.ts](apps/payment-mfe/src/app/app.config.ts)                                                                   | Standalone bootstrap config — provides APP_CONFIG dev defaults                                                                                                                                                                                    |
 
 ### Layer 2 — Backend for Frontend
 
 #### web-bff (Web UI surface)
 
-| File | Description |
-|------|-------------|
-| [apps/web-bff/src/app.ts](apps/web-bff/src/app.ts) | BFF factory: middleware chain, route registration |
-| [apps/web-bff/src/middleware/auth.ts](apps/web-bff/src/middleware/auth.ts) | Bearer token validation |
-| [apps/web-bff/src/middleware/correlationId.ts](apps/web-bff/src/middleware/correlationId.ts) | x-correlation-id propagation |
-| [apps/web-bff/src/middleware/requestLogger.ts](apps/web-bff/src/middleware/requestLogger.ts) | Structured JSON request logging |
-| [apps/web-bff/src/routes/bills.ts](apps/web-bff/src/routes/bills.ts) | GET /api/bills, GET /api/bills/:id aggregation |
-| [apps/web-bff/src/routes/payments.ts](apps/web-bff/src/routes/payments.ts) | POST /api/payments validation + proxy |
-| [apps/web-bff/src/services/bills.service.ts](apps/web-bff/src/services/bills.service.ts) | Typed fetch wrappers for bills-api |
-| [apps/web-bff/src/services/payments.service.ts](apps/web-bff/src/services/payments.service.ts) | Typed fetch wrappers for payments-api |
+| File                                                                                           | Description                                       |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| [apps/web-bff/src/app.ts](apps/web-bff/src/app.ts)                                             | BFF factory: middleware chain, route registration |
+| [apps/web-bff/src/middleware/auth.ts](apps/web-bff/src/middleware/auth.ts)                     | Bearer token validation                           |
+| [apps/web-bff/src/middleware/correlationId.ts](apps/web-bff/src/middleware/correlationId.ts)   | x-correlation-id propagation                      |
+| [apps/web-bff/src/middleware/requestLogger.ts](apps/web-bff/src/middleware/requestLogger.ts)   | Structured JSON request logging                   |
+| [apps/web-bff/src/routes/bills.ts](apps/web-bff/src/routes/bills.ts)                           | GET /api/bills, GET /api/bills/:id aggregation    |
+| [apps/web-bff/src/routes/payments.ts](apps/web-bff/src/routes/payments.ts)                     | POST /api/payments validation + proxy             |
+| [apps/web-bff/src/services/bills.service.ts](apps/web-bff/src/services/bills.service.ts)       | Typed fetch wrappers for bills-api                |
+| [apps/web-bff/src/services/payments.service.ts](apps/web-bff/src/services/payments.service.ts) | Typed fetch wrappers for payments-api             |
 
 #### partner-bff (B2B Partner Integration surface)
 
-| File | Description |
-|------|-------------|
-| [apps/partner-bff/src/app.ts](apps/partner-bff/src/app.ts) | BFF factory: correlation + API key middleware |
-| [apps/partner-bff/src/middleware/apikey.middleware.ts](apps/partner-bff/src/middleware/apikey.middleware.ts) | X-Partner-Key validation (not Bearer token) |
-| [apps/partner-bff/src/middleware/correlation.middleware.ts](apps/partner-bff/src/middleware/correlation.middleware.ts) | x-correlation-id propagation |
-| [apps/partner-bff/src/routes/bills.routes.ts](apps/partner-bff/src/routes/bills.routes.ts) | GET /partner/bills — reduced payload (billId, accountId, balance, dueDate, status only) |
-| [apps/partner-bff/src/routes/payments.routes.ts](apps/partner-bff/src/routes/payments.routes.ts) | POST /partner/payments — 202 Accepted + webhook callback pattern |
-| [apps/partner-bff/src/server.ts](apps/partner-bff/src/server.ts) | ESM entry point |
+| File                                                                                                                   | Description                                                                             |
+| ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| [apps/partner-bff/src/app.ts](apps/partner-bff/src/app.ts)                                                             | BFF factory: correlation + API key middleware                                           |
+| [apps/partner-bff/src/middleware/apikey.middleware.ts](apps/partner-bff/src/middleware/apikey.middleware.ts)           | X-Partner-Key validation (not Bearer token)                                             |
+| [apps/partner-bff/src/middleware/correlation.middleware.ts](apps/partner-bff/src/middleware/correlation.middleware.ts) | x-correlation-id propagation                                                            |
+| [apps/partner-bff/src/routes/bills.routes.ts](apps/partner-bff/src/routes/bills.routes.ts)                             | GET /partner/bills — reduced payload (billId, accountId, balance, dueDate, status only) |
+| [apps/partner-bff/src/routes/payments.routes.ts](apps/partner-bff/src/routes/payments.routes.ts)                       | POST /partner/payments — 202 Accepted + webhook callback pattern                        |
+| [apps/partner-bff/src/server.ts](apps/partner-bff/src/server.ts)                                                       | ESM entry point                                                                         |
 
 ### Layer 3 — Domain APIs
 
-| File | Description |
-|------|-------------|
-| [apps/bills-api/src/app.ts](apps/bills-api/src/app.ts) | Express app factory |
-| [apps/bills-api/src/data/bills.ts](apps/bills-api/src/data/bills.ts) | In-memory bill store; makeBill() always computes balance |
-| [apps/bills-api/src/routes/bills.ts](apps/bills-api/src/routes/bills.ts) | GET /v1/bills, GET /v1/bills/:id |
-| [apps/payments-api/src/app.ts](apps/payments-api/src/app.ts) | Express app factory |
-| [apps/payments-api/src/routes/payments.ts](apps/payments-api/src/routes/payments.ts) | GET /v1/payments, POST /v1/payments |
+| File                                                                                 | Description                                              |
+| ------------------------------------------------------------------------------------ | -------------------------------------------------------- |
+| [apps/bills-api/src/app.ts](apps/bills-api/src/app.ts)                               | Express app factory                                      |
+| [apps/bills-api/src/data/bills.ts](apps/bills-api/src/data/bills.ts)                 | In-memory bill store; makeBill() always computes balance |
+| [apps/bills-api/src/routes/bills.ts](apps/bills-api/src/routes/bills.ts)             | GET /v1/bills, GET /v1/bills/:id                         |
+| [apps/payments-api/src/app.ts](apps/payments-api/src/app.ts)                         | Express app factory                                      |
+| [apps/payments-api/src/routes/payments.ts](apps/payments-api/src/routes/payments.ts) | GET /v1/payments, POST /v1/payments                      |
 
 ### Tests
 
-| File | Description |
-|------|-------------|
-| [apps/bills-api/src/__tests__/bills.spec.ts](apps/bills-api/src/__tests__/bills.spec.ts) | Domain API unit tests (Jest + supertest) |
-| [apps/payments-api/src/__tests__/payments.spec.ts](apps/payments-api/src/__tests__/payments.spec.ts) | Domain API unit tests |
-| [apps/web-bff/src/__tests__/bff.spec.ts](apps/web-bff/src/__tests__/bff.spec.ts) | BFF integration tests (Jest + service mocks) |
-| [apps/bills-mfe/src/app/app.component.spec.ts](apps/bills-mfe/src/app/app.component.spec.ts) | MFE unit tests (Vitest + Angular TestBed) |
-| [apps/bills-mfe/src/app/bff.contract.spec.ts](apps/bills-mfe/src/app/bff.contract.spec.ts) | Consumer-driven contract tests |
-| [apps/payment-mfe/src/app/app.component.spec.ts](apps/payment-mfe/src/app/app.component.spec.ts) | MFE unit tests |
-| [apps/payment-mfe/src/app/bff.contract.spec.ts](apps/payment-mfe/src/app/bff.contract.spec.ts) | Consumer-driven contract tests |
+| File                                                                                                 | Description                                  |
+| ---------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| [apps/bills-api/src/**tests**/bills.spec.ts](apps/bills-api/src/__tests__/bills.spec.ts)             | Domain API unit tests (Jest + supertest)     |
+| [apps/payments-api/src/**tests**/payments.spec.ts](apps/payments-api/src/__tests__/payments.spec.ts) | Domain API unit tests                        |
+| [apps/web-bff/src/**tests**/bff.spec.ts](apps/web-bff/src/__tests__/bff.spec.ts)                     | BFF integration tests (Jest + service mocks) |
+| [apps/bills-mfe/src/app/app.component.spec.ts](apps/bills-mfe/src/app/app.component.spec.ts)         | MFE unit tests (Vitest + Angular TestBed)    |
+| [apps/bills-mfe/src/app/bff.contract.spec.ts](apps/bills-mfe/src/app/bff.contract.spec.ts)           | Consumer-driven contract tests               |
+| [apps/payment-mfe/src/app/app.component.spec.ts](apps/payment-mfe/src/app/app.component.spec.ts)     | MFE unit tests                               |
+| [apps/payment-mfe/src/app/bff.contract.spec.ts](apps/payment-mfe/src/app/bff.contract.spec.ts)       | Consumer-driven contract tests               |
 
 ### Utilities
 
-| File | Description |
-|------|-------------|
-| [stop-all.sh](stop-all.sh) | Force-kill all services by port (use if Ctrl+C fails or ports are stuck) |
+| File                               | Description                                                                |
+| ---------------------------------- | -------------------------------------------------------------------------- |
+| [stop-all.sh](stop-all.sh)         | Force-kill all services by port (use if Ctrl+C fails or ports are stuck)   |
 | [health-check.sh](health-check.sh) | Curl all 7 service health endpoints; exits 0 if all healthy, 1 if any down |
 
 ---
@@ -140,6 +173,8 @@ See [TEST-RESULTS.md](documentation/TEST-RESULTS.md) for full test documentation
 ## Guided Walkthrough
 
 This section is the tutorial core. Follow these steps in order to see every architectural principle in action.
+
+If you are presenting live, use [documentation/DEMO-WALKTHROUGH.md](documentation/DEMO-WALKTHROUGH.md) for a timed script and [documentation/DEMO-FAILURE-SCENARIOS.md](documentation/DEMO-FAILURE-SCENARIOS.md) for controlled failure demos.
 
 ### Step 1 — Load the app
 
@@ -186,6 +221,17 @@ This section is the tutorial core. Follow these steps in order to see every arch
 **Code:** [apps/web-bff/src/middleware/correlationId.ts](apps/web-bff/src/middleware/correlationId.ts) — Generates or propagates `x-correlation-id` on every request. The same ID flows through BFF → bills-api → payments-api logs, enabling distributed tracing.
 
 **What ⚡ Arch shows:** The `requestId` shown in the event card matches the terminal log `correlationId`
+
+### Step 4.5 — Trace one request end to end
+
+**Try it:** Pick one request and trace it across layers.
+
+1. Click a bill row in the UI.
+2. Copy the `requestId` shown in the ⚡ Arch panel.
+3. Find the same `correlationId` value in web-bff logs.
+4. Find the same ID in bills-api/payments-api logs.
+
+**Why this matters:** This is distributed tracing without guessing. In real incidents, one ID connects browser behavior to every backend hop.
 
 ---
 
@@ -283,7 +329,7 @@ The Bills team can build, test, and serve bills-mfe without running shell-app, p
 
 **Code:** [apps/bills-api/src/data/bills.ts](apps/bills-api/src/data/bills.ts) — `makeBill()` always computes `balance: totalAmount - amountPaid`. This ensures the balance is always consistent with the source of truth (total and paid amounts).
 
-**What ⚡ Arch shows:** No event — vocabulary discipline is a data modeling concern verified by tests ([apps/bills-api/src/__tests__/bills.spec.ts](apps/bills-api/src/__tests__/bills.spec.ts) line 25-32)
+**What ⚡ Arch shows:** No event — vocabulary discipline is a data modeling concern verified by tests ([apps/bills-api/src/**tests**/bills.spec.ts](apps/bills-api/src/__tests__/bills.spec.ts) line 25-32)
 
 ---
 
@@ -313,13 +359,13 @@ The Bills team can build, test, and serve bills-mfe without running shell-app, p
 
 ## Architectural Rules — Quick Reference
 
-| Rule | Enforced in |
-|------|-------------|
-| MFEs call only the BFF — never domain APIs directly | [apps/bills-mfe/src/app/arch-guard.interceptor.ts](apps/bills-mfe/src/app/arch-guard.interceptor.ts), [apps/payment-mfe/src/app/arch-guard.interceptor.ts](apps/payment-mfe/src/app/arch-guard.interceptor.ts) |
-| Balance validation lives at the BFF | [apps/web-bff/src/routes/payments.ts](apps/web-bff/src/routes/payments.ts) |
-| MFEs communicate only via namespaced CustomEvents | [apps/bills-mfe/src/app/app.component.ts](apps/bills-mfe/src/app/app.component.ts) (dispatch), [apps/shell-app/src/app/app.ts](apps/shell-app/src/app/app.ts) (listen) |
-| Module Federation remotes loaded at runtime | [apps/shell-app/src/app/app.routes.ts](apps/shell-app/src/app/app.routes.ts) (loadRemoteModule calls) |
-| maskedAccount holds only last 4 digits | [apps/payment-mfe/src/app/app.component.ts](apps/payment-mfe/src/app/app.component.ts) (maskedAccount construction), [apps/web-bff/src/routes/payments.ts](apps/web-bff/src/routes/payments.ts) (passes through without touching) |
+| Rule                                                | Enforced in                                                                                                                                                                                                                       |
+| --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| MFEs call only the BFF — never domain APIs directly | [apps/bills-mfe/src/app/arch-guard.interceptor.ts](apps/bills-mfe/src/app/arch-guard.interceptor.ts), [apps/payment-mfe/src/app/arch-guard.interceptor.ts](apps/payment-mfe/src/app/arch-guard.interceptor.ts)                    |
+| Balance validation lives at the BFF                 | [apps/web-bff/src/routes/payments.ts](apps/web-bff/src/routes/payments.ts)                                                                                                                                                        |
+| MFEs communicate only via namespaced CustomEvents   | [apps/bills-mfe/src/app/app.component.ts](apps/bills-mfe/src/app/app.component.ts) (dispatch), [apps/shell-app/src/app/app.ts](apps/shell-app/src/app/app.ts) (listen)                                                            |
+| Module Federation remotes loaded at runtime         | [apps/shell-app/src/app/app.routes.ts](apps/shell-app/src/app/app.routes.ts) (loadRemoteModule calls)                                                                                                                             |
+| maskedAccount holds only last 4 digits              | [apps/payment-mfe/src/app/app.component.ts](apps/payment-mfe/src/app/app.component.ts) (maskedAccount construction), [apps/web-bff/src/routes/payments.ts](apps/web-bff/src/routes/payments.ts) (passes through without touching) |
 
 ---
 
@@ -353,24 +399,28 @@ lsof -ti :4001 | xargs kill
 npx nx run-many -t test -p bills-api payments-api web-bff bills-mfe payment-mfe shell-app
 ```
 
+### CI/CD Scope for This Demo
+
+This repository is intentionally optimized for local architecture demos and team learning. CI/CD pipeline templates are intentionally omitted for this sample so attention stays on runtime boundaries and interaction flow.
+
 ---
 
 ## Intentional Limitations
 
 This sample intentionally omits several production concerns to keep the focus on architectural principles:
 
-| Omitted | Why | Where to Learn More |
-|---------|-----|---------------------|
-| Real authentication | Demo uses hardcoded `Bearer demo-token` | [E4](documentation/suite-architecture-standards.md#e4) — centralized auth; replace with OAuth2/OIDC in production |
-| Persistence layer | Domain APIs use in-memory data stores | [E2](documentation/suite-architecture-standards.md#e2) — domain APIs would use PostgreSQL, MongoDB, etc. |
-| Payment gateway integration | No Stripe/Braintree/Adyen | [A7](documentation/suite-architecture-standards.md#a7) — vendor SDKs belong in domain APIs, not the BFF |
-| Error boundaries | No UI fallback for MFE load failures | [A9](documentation/suite-architecture-standards.md#a9) — production shells need error boundaries per remote |
-| CI/CD pipelines | No GitHub Actions / CircleCI config | [P4](documentation/principles.md#p4) — each app needs independent pipeline |
-| API rate limiting | No throttling or quota enforcement | [E12](documentation/suite-architecture-standards.md#e12) — production BFFs need rate limiting middleware |
-| Real-time updates | No WebSocket / Server-Sent Events | [E11](documentation/suite-architecture-standards.md#e11) — real-time events require event-driven architecture |
-| Multi-tenancy | Single account only | [E8](documentation/suite-architecture-standards.md#e8) — production requires tenant isolation |
-| Internationalization | English only | [A9](documentation/suite-architecture-standards.md#a9) — i18n belongs in MFEs, not BFF responses |
-| OpenAPI specs | Not yet generated | [E1](documentation/suite-architecture-standards.md#e1) — contract-first means OpenAPI before implementation |
+| Omitted                     | Why                                     | Where to Learn More                                                                                               |
+| --------------------------- | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Real authentication         | Demo uses hardcoded `Bearer demo-token` | [E4](documentation/suite-architecture-standards.md#e4) — centralized auth; replace with OAuth2/OIDC in production |
+| Persistence layer           | Domain APIs use in-memory data stores   | [E2](documentation/suite-architecture-standards.md#e2) — domain APIs would use PostgreSQL, MongoDB, etc.          |
+| Payment gateway integration | No Stripe/Braintree/Adyen               | [A7](documentation/suite-architecture-standards.md#a7) — vendor SDKs belong in domain APIs, not the BFF           |
+| Error boundaries            | No UI fallback for MFE load failures    | [A9](documentation/suite-architecture-standards.md#a9) — production shells need error boundaries per remote       |
+| CI/CD pipelines             | No GitHub Actions / CircleCI config     | [P4](documentation/principles.md#p4) — each app needs independent pipeline                                        |
+| API rate limiting           | No throttling or quota enforcement      | [E12](documentation/suite-architecture-standards.md#e12) — production BFFs need rate limiting middleware          |
+| Real-time updates           | No WebSocket / Server-Sent Events       | [E11](documentation/suite-architecture-standards.md#e11) — real-time events require event-driven architecture     |
+| Multi-tenancy               | Single account only                     | [E8](documentation/suite-architecture-standards.md#e8) — production requires tenant isolation                     |
+| Internationalization        | English only                            | [A9](documentation/suite-architecture-standards.md#a9) — i18n belongs in MFEs, not BFF responses                  |
+| OpenAPI specs               | Not yet generated                       | [E1](documentation/suite-architecture-standards.md#e1) — contract-first means OpenAPI before implementation       |
 
 **The omissions are intentional, not oversights.** This sample demonstrates architecture, not feature completeness.
 
@@ -382,6 +432,9 @@ This sample intentionally omits several production concerns to keep the focus on
 
 - **[NAVIGATION-FLOWS.md](documentation/NAVIGATION-FLOWS.md)** — Mermaid sequence diagrams for every user interaction: bootstrap, bills list, bill detail aggregation, Pay Now CustomEvent, payment submission with balance guard, confirmation badge refresh, and a complete navigation map
 - **[PARTNER-BFF-A2-DEMO.md](documentation/PARTNER-BFF-A2-DEMO.md)** — Side-by-side curl comparisons showing A2 (BFF Per Surface, Not Per Service) in action: web-bff vs partner-bff calling the same domain APIs with different auth, response shapes, and payment patterns
+- **[DEMO-WALKTHROUGH.md](documentation/DEMO-WALKTHROUGH.md)** — Presenter script for a 5-10 minute architecture demo
+- **[DEMO-FAILURE-SCENARIOS.md](documentation/DEMO-FAILURE-SCENARIOS.md)** — Controlled failure-mode demos with recovery commands
+- **[ANTI-PATTERNS.md](documentation/ANTI-PATTERNS.md)** — Common architecture mistakes this repo prevents and where the guardrails live
 
 ### Workspace Documentation
 
@@ -396,7 +449,7 @@ This sample intentionally omits several production concerns to keep the focus on
 - [Sam Newman — Original BFF Pattern](https://samnewman.io/patterns/architectural/bff/) — "One experience, one BFF"; BFF owned by the same team as the UI
 - [Microsoft Azure Architecture Center](https://learn.microsoft.com/en-us/azure/architecture/patterns/backends-for-frontends) — Cross-cutting concerns (auth, rate limiting) at gateway layer
 - [AWS — Backends for Frontends Pattern](https://aws.amazon.com/blogs/mobile/backends-for-frontends-pattern/) — Event-driven BFF variant with real-time updates
-- [ITNEXT — BFF: What It Is and When to Use It](https://itnext.io/backend-for-frontend-bff-what-it-is-and-when-to-use-it-6e8edb72e32c) — Practical examples and anti-patterns
+- [BFF: What It Is and When to Use It](https://itnext.io/backend-for-frontend-bff-what-it-is-and-when-to-use-it-6e8edb72e32c) — Practical examples and anti-patterns
 
 ### 12-Factor App Methodology
 

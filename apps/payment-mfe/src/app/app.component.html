@@ -1,125 +1,146 @@
 <div class="mfe-boundary">
-@if (bill.isLoading()) {
-  <div class="loading-skeleton">
-    <div class="skeleton-row"></div>
-    <div class="skeleton-row"></div>
-  </div>
-} @else if (!billId() || bill.error()) {
-  <div class="error-message">
-    <p>Bill not found.</p>
-    <a href="#" (click)="navigateToBills($event)" class="back-link">← Back to Bills</a>
-  </div>
-} @else if (confirmation(); as conf) {
-  <!-- Confirmation Panel -->
-  <div class="flow-path">
-    <span class="flow-node mfe">payment-mfe :4202</span>
-    <span class="flow-arrow">⚡ suite:payment:submitted</span>
-    <span class="flow-node shell">shell-app :4200</span>
-    <span class="flow-label">(CustomEvent → overdue badge refresh)</span>
-  </div>
-
-  <div class="confirmation-panel">
-    <h2>Payment Submitted Successfully</h2>
-    <p>Payment of <strong>{{ conf.amount | currency }}</strong> submitted successfully.</p>
-    <dl>
-      <dt>Payment ID</dt><dd>{{ conf.id }}</dd>
-      <dt>Method</dt><dd>{{ conf.method === 'card' ? 'Card' : 'ACH' }}</dd>
-      <dt>Account</dt><dd>{{ conf.maskedAccount }}</dd>
-      <dt>Status</dt><dd>{{ conf.status }}</dd>
-    </dl>
-    <button class="back-btn" (click)="navigateToBills($event)">← Back to Bills</button>
-  </div>
-} @else if (billData(); as b) {
-  <!-- Bill Summary -->
-  <div class="flow-path">
-    <span class="flow-node shell">shell-app :4200</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-node mfe">payment-mfe :4202</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-node bff">web-bff :3001</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-node api">bills-api :4001</span>
-    <span class="flow-label">(fetch) /</span>
-    <span class="flow-node api">payments-api :4002</span>
-    <span class="flow-label">(submit)</span>
-  </div>
-
-  <section class="bill-summary">
-    <h2>Payment for Invoice {{ b.invoiceNumber }}</h2>
-    <dl>
-      <dt>Due Date</dt><dd>{{ b.dueDate | date:'mediumDate' }}</dd>
-      <dt>Total Amount</dt><dd>{{ b.totalAmount | currency }}</dd>
-      <dt>Amount Paid</dt><dd>{{ b.amountPaid | currency }}</dd>
-      <dt>Balance Due</dt><dd class="balance-due">{{ b.balance | currency }}</dd>
-    </dl>
-  </section>
-
-  <!-- Payment Form -->
-  <form class="payment-form" (ngSubmit)="submitPayment()">
-    <div class="form-field">
-      <label for="amount">Payment Amount</label>
-      <input
-        id="amount"
-        type="number"
-        [value]="amount()"
-        (input)="onAmountChange($any($event.target).value)"
-        (blur)="amountTouched.set(true)"
-        [attr.max]="b.balance"
-        min="0.01"
-        step="0.01"
-        placeholder="0.00" />
-      @if (amountError(); as err) {
-        <span class="field-error">{{ err }}</span>
-      }
+  @if (bill.isLoading()) {
+    <div class="loading-skeleton">
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
+    </div>
+  } @else if (!billId() || bill.error()) {
+    <div class="error-message">
+      <p>Bill not found.</p>
+      <a href="#" (click)="navigateToBills($event)" class="back-link"
+        >← Back to Bills</a
+      >
+    </div>
+  } @else if (confirmation(); as conf) {
+    <!-- Confirmation Panel -->
+    <div class="flow-path">
+      <span class="flow-node mfe">payment-mfe :4202</span>
+      <span class="flow-arrow">⚡ suite:payment:submitted</span>
+      <span class="flow-node shell">shell-app :4200</span>
+      <span class="flow-label">(CustomEvent → overdue badge refresh)</span>
     </div>
 
-    <div class="form-field method-selector">
-      <label>Payment Method</label>
-      <div class="method-options">
-        <label class="method-option">
-          <input type="radio" name="method" value="card"
-            [checked]="method() === 'card'"
-            (change)="onMethodChange('card')" />
-          Card
-        </label>
-        <label class="method-option">
-          <input type="radio" name="method" value="ach"
-            [checked]="method() === 'ach'"
-            (change)="onMethodChange('ach')" />
-          ACH
-        </label>
+    <div class="confirmation-panel">
+      <h2>Payment Submitted Successfully</h2>
+      <p>
+        Payment of <strong>{{ conf.amount | currency }}</strong> submitted
+        successfully.
+      </p>
+      <dl>
+        <dt>Payment ID</dt>
+        <dd>{{ conf.id }}</dd>
+        <dt>Method</dt>
+        <dd>{{ conf.method === 'card' ? 'Card' : 'ACH' }}</dd>
+        <dt>Account</dt>
+        <dd>{{ conf.maskedAccount }}</dd>
+        <dt>Status</dt>
+        <dd>{{ conf.status }}</dd>
+      </dl>
+      <button class="back-btn" (click)="navigateToBills($event)">
+        ← Back to Bills
+      </button>
+    </div>
+  } @else if (billData(); as b) {
+    <!-- Bill Summary -->
+    <div class="flow-path">
+      <span class="flow-node shell">shell-app :4200</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node mfe">payment-mfe :4202</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node bff">web-bff :3001</span>
+      <span class="flow-arrow">→</span>
+      <span class="flow-node api">bills-api :4001</span>
+      <span class="flow-label">(fetch) /</span>
+      <span class="flow-node api">payments-api :4002</span>
+      <span class="flow-label">(submit)</span>
+    </div>
+
+    <section class="bill-summary">
+      <h2>Payment for Invoice {{ b.invoiceNumber }}</h2>
+      <dl>
+        <dt>Due Date</dt>
+        <dd>{{ b.dueDate | date: 'mediumDate' }}</dd>
+        <dt>Total Amount</dt>
+        <dd>{{ b.totalAmount | currency }}</dd>
+        <dt>Amount Paid</dt>
+        <dd>{{ b.amountPaid | currency }}</dd>
+        <dt>Balance Due</dt>
+        <dd class="balance-due">{{ b.balance | currency }}</dd>
+      </dl>
+    </section>
+
+    <!-- Payment Form -->
+    <form class="payment-form" (ngSubmit)="submitPayment()">
+      <div class="form-field">
+        <label for="amount">Payment Amount</label>
+        <input
+          id="amount"
+          type="number"
+          [value]="amount()"
+          (input)="onAmountChange($any($event.target).value)"
+          (blur)="amountTouched.set(true)"
+          [attr.max]="b.balance"
+          min="0.01"
+          step="0.01"
+          placeholder="0.00"
+        />
+        @if (amountError(); as err) {
+          <span class="field-error">{{ err }}</span>
+        }
       </div>
-    </div>
 
-    <div class="form-field">
-      <label for="last4">Last 4 Digits</label>
-      <input
-        id="last4"
-        type="text"
-        [value]="last4()"
-        (input)="onLast4Change($any($event.target).value)"
-        (blur)="last4Touched.set(true)"
-        maxlength="4"
-        placeholder="1234" />
-      @if (last4Error(); as err) {
-        <span class="field-error">{{ err }}</span>
+      <div class="form-field method-selector">
+        <label>Payment Method</label>
+        <div class="method-options">
+          <label class="method-option">
+            <input
+              type="radio"
+              name="method"
+              value="card"
+              [checked]="method() === 'card'"
+              (change)="onMethodChange('card')"
+            />
+            Card
+          </label>
+          <label class="method-option">
+            <input
+              type="radio"
+              name="method"
+              value="ach"
+              [checked]="method() === 'ach'"
+              (change)="onMethodChange('ach')"
+            />
+            ACH
+          </label>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label for="last4">Last 4 Digits</label>
+        <input
+          id="last4"
+          type="text"
+          [value]="last4()"
+          (input)="onLast4Change($any($event.target).value)"
+          (blur)="last4Touched.set(true)"
+          maxlength="4"
+          placeholder="1234"
+        />
+        @if (last4Error(); as err) {
+          <span class="field-error">{{ err }}</span>
+        }
+      </div>
+
+      @if (balanceError(); as err) {
+        <div class="field-error balance-error">{{ err }}</div>
       }
-    </div>
+      @if (submitError(); as err) {
+        <div class="field-error submit-error">{{ err }}</div>
+      }
 
-    @if (balanceError(); as err) {
-      <div class="field-error balance-error">{{ err }}</div>
-    }
-    @if (submitError(); as err) {
-      <div class="field-error submit-error">{{ err }}</div>
-    }
-
-    <button
-      type="submit"
-      class="submit-button"
-      [disabled]="submitting()">
-      {{ submitting() ? 'Submitting…' : 'Submit Payment' }}
-    </button>
-  </form>
-}
-  </div>
-
+      <button type="submit" class="submit-button" [disabled]="submitting()">
+        {{ submitting() ? 'Submitting…' : 'Submit Payment' }}
+      </button>
+    </form>
+  }
+</div>

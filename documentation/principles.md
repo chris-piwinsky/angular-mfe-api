@@ -36,6 +36,7 @@ If the answer is no — if the architecture makes it easier to bypass the BFF, c
 Build every Billing and Payments domain capability as a headless API first. The UI is a consumer — not the owner. An API designed only to answer a specific screen's question is not a platform; it is a bespoke integration that will need to be rebuilt when the next screen has a different need.
 
 **In practice:**
+
 - Define the [OpenAPI](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#openapi--openapi-schema) schema before writing any implementation code
 - Any capability that exists only inside a UI does not count as a platform capability
 - Domain APIs (bills, payments) must be usable by web, mobile, partner, and internal tooling consumers without modification
@@ -48,11 +49,13 @@ Build every Billing and Payments domain capability as a headless API first. The 
 
 The domain service owns the data and the rules. The BFF owns the question "what does this specific screen need?" These are different responsibilities and must live in different places.
 
-**The right question:** *"Does this logic exist only because this specific UI needs it?"*
+**The right question:** _"Does this logic exist only because this specific UI needs it?"_
+
 - Yes → belongs in the BFF
 - No → belongs in the domain service
 
 **In practice:**
+
 - A new view requirement should never require a new domain API endpoint — it should require a new BFF response shape composed from existing domain data
 - BFF duplication across surfaces (web-BFF, mobile-BFF) is acceptable; shared BFF logic libraries are not — shared logic that belongs across consumers belongs in the domain service
 - The BFF team and the frontend team are the same team
@@ -68,6 +71,7 @@ The domain service owns the data and the rules. The BFF owns the question "what 
 No micro frontend makes direct calls to domain APIs. The BFF is the single network boundary the frontend crosses.
 
 **Why this matters for Billing and Payments:**
+
 - Payment data is sensitive. The BFF is the security perimeter — it validates tokens, enforces authorization, and masks data before it reaches the browser
 - Direct frontend-to-domain-API calls bypass all of this and expose internal service contracts to the browser
 - [PCI DSS](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#pci-dss-payment-card-industry-data-security-standard) scope is contained at the [tokenization](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#tokenization-payment-tokenization) boundary; card data never transits the BFF or MFE. Only masked references (last 4 digits, payment method token) are handled by Suite-owned systems
@@ -81,6 +85,7 @@ No micro frontend makes direct calls to domain APIs. The BFF is the single netwo
 Every micro frontend, every BFF, and every domain service must be deployable on its own — without coordinating with other teams, without a shared release window, and without awareness of the current state of other pipelines.
 
 **In practice:**
+
 - Each MFE has its own [CI/CD](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#cicd-pipeline-continuous-integration--continuous-delivery) pipeline; deploying bills-MFE does not require payment-MFE to be deployed simultaneously
 - Coupling that forces coordinated releases is a design problem, not a scheduling problem — fix the coupling
 - Use runtime composition (Module Federation / Native Federation) — never bundle MFEs together at build time
@@ -97,6 +102,7 @@ Teams organized around [horizontal technical concerns](https://github.com/chris-
 Organize Billing and Payments teams around **[vertical business domain slices](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#vertical-domain-slice--vertical-team)** — a team owns the database, the domain API, the BFF, and the micro frontend for their domain. That team can design, build, test, and deploy without waiting for anyone else.
 
 **In practice:**
+
 - The bills team owns everything in the bills domain end-to-end
 - The payments team owns everything in the payments domain end-to-end
 - Cross-cutting concerns (design system, shared auth patterns, observability tooling) are platforms or guilds — they enable teams, they do not block them
@@ -110,6 +116,7 @@ Organize Billing and Payments teams around **[vertical business domain slices](h
 The default answer to "we need a new capability" is to assemble it from existing domain APIs and vendor integrations behind a Suite-owned interface — not to build net-new. Reserve building from scratch for capabilities that are a genuine competitive differentiator.
 
 **For Billing and Payments specifically:**
+
 - Vendor integrations (payment processors, identity providers) are abstracted behind Suite-owned interfaces so vendors can be replaced without touching MFEs or domain APIs
 - The organization is moving toward [build/assemble over buy](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#build-vs-buy-vs-assemble); this does not mean building commodity capabilities — it means owning the integration layer and avoiding [lock-in](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/definitions.md#vendor-lock-in)
 
@@ -122,6 +129,7 @@ The default answer to "we need a new capability" is to assemble it from existing
 Decoupling the UI from the domain API introduces latency that must be managed deliberately. The BFF layer is the right place to implement caching strategy — not the MFE, and not the domain API.
 
 **In Billing and Payments context:**
+
 - Domain APIs in their current state carry known performance constraints; the BFF caching layer is an opportunity to mask that latency from users while APIs mature
 - Caching strategy should be designed alongside the BFF contract, not bolted on after performance complaints
 - Cache invalidation rules are owned by the BFF team — they know the staleness tolerance of each screen

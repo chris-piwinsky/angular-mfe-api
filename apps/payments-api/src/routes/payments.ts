@@ -32,7 +32,12 @@ paymentsRouter.post('/', (req: Request, res: Response) => {
   const requestId = (req.headers['x-correlation-id'] as string) ?? randomUUID();
   const body = req.body as PaymentRequest;
 
-  if (!body.billId || body.amount == null || !body.method || !body.maskedAccount) {
+  if (
+    !body.billId ||
+    body.amount == null ||
+    !body.method ||
+    !body.maskedAccount
+  ) {
     res.status(400).json({
       error: 'missing_fields',
       message: 'billId, amount, method, and maskedAccount are required.',

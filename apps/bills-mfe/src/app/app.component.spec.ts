@@ -1,7 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
+import {
+  provideHttpClientTesting,
+  HttpTestingController,
+} from '@angular/common/http/testing';
 import { AppComponent } from './app.component';
 import { APP_CONFIG } from '@billing-portal/shared/app-config';
 
@@ -23,7 +26,12 @@ const mockBills = [
     balance: 300.0,
     status: 'unpaid',
     lineItems: [
-      { description: 'Service fee', quantity: 1, unitPrice: 300.0, lineTotal: 300.0 },
+      {
+        description: 'Service fee',
+        quantity: 1,
+        unitPrice: 300.0,
+        lineTotal: 300.0,
+      },
     ],
   },
   {
@@ -86,7 +94,10 @@ describe('AppComponent (bills-mfe)', () => {
     fixture.detectChanges();
 
     const req = httpMock.expectOne('http://localhost:3001/api/bills');
-    req.flush('Server error', { status: 500, statusText: 'Internal Server Error' });
+    req.flush('Server error', {
+      status: 500,
+      statusText: 'Internal Server Error',
+    });
     fixture.detectChanges();
 
     // httpResource provides .error() signal - template uses @if (bills.error())
@@ -100,7 +111,9 @@ describe('AppComponent (bills-mfe)', () => {
     component.setFilter('overdue');
     fixture.detectChanges();
 
-    const req = httpMock.expectOne('http://localhost:3001/api/bills?status=overdue');
+    const req = httpMock.expectOne(
+      'http://localhost:3001/api/bills?status=overdue',
+    );
     expect(req.request.url).toContain('status=overdue');
     req.flush({ data: [mockBills[1]], requestId: 'test-req-2' });
     fixture.detectChanges();
@@ -115,7 +128,9 @@ describe('AppComponent (bills-mfe)', () => {
     component.selectBill('bill-001');
     fixture.detectChanges();
 
-    const detailReq = httpMock.expectOne('http://localhost:3001/api/bills/bill-001');
+    const detailReq = httpMock.expectOne(
+      'http://localhost:3001/api/bills/bill-001',
+    );
     detailReq.flush({ ...mockBills[0], payments: [], requestId: 'test-req-3' });
     fixture.detectChanges();
 

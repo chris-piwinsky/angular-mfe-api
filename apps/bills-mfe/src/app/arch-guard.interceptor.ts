@@ -8,7 +8,7 @@ export const archGuardInterceptor: HttpInterceptorFn = (req, next) => {
   if (!req.url.startsWith(config.bffBaseUrl)) {
     console.warn(
       '[ARCH VIOLATION] Micro frontend is calling a domain API directly. ' +
-        'All requests must go through the BFF.'
+        'All requests must go through the BFF.',
     );
   }
 

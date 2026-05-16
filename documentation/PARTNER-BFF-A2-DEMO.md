@@ -11,17 +11,18 @@ Two surfaces (web UI and B2B partner integration) → Two BFFs → Same domain A
 ## Implementation Summary
 
 **Created:**
+
 - `apps/partner-bff/` — B2B partner integration BFF (port 3002)
 
 **Key Differences from web-bff:**
 
-| Aspect | web-bff (port 3001) | partner-bff (port 3002) |
-|--------|---------------------|-------------------------|
-| **Auth** | Bearer token (`Authorization: Bearer demo-token`) | API key (`X-Partner-Key: demo-partner-key`) |
-| **Bills payload** | Full bill object: invoiceNumber, billingPeriod, lineItems[], payments[] | Reduced: billId, accountId, balance, dueDate, status only |
-| **Payment response** | 201 Created (synchronous) | 202 Accepted (webhook pattern) |
-| **CORS** | Enabled (browser consumer) | Disabled (server-to-server) |
-| **x-arch-note headers** | Yes (learning demo) | No (production-like) |
+| Aspect                  | web-bff (port 3001)                                                     | partner-bff (port 3002)                                   |
+| ----------------------- | ----------------------------------------------------------------------- | --------------------------------------------------------- |
+| **Auth**                | Bearer token (`Authorization: Bearer demo-token`)                       | API key (`X-Partner-Key: demo-partner-key`)               |
+| **Bills payload**       | Full bill object: invoiceNumber, billingPeriod, lineItems[], payments[] | Reduced: billId, accountId, balance, dueDate, status only |
+| **Payment response**    | 201 Created (synchronous)                                               | 202 Accepted (webhook pattern)                            |
+| **CORS**                | Enabled (browser consumer)                                              | Disabled (server-to-server)                               |
+| **x-arch-note headers** | Yes (learning demo)                                                     | No (production-like)                                      |
 
 ---
 
@@ -30,12 +31,14 @@ Two surfaces (web UI and B2B partner integration) → Two BFFs → Same domain A
 ### Same Bill, Different Contracts
 
 **web-bff** — Rich UI payload:
+
 ```bash
 curl -H "Authorization: Bearer demo-token" \
      http://localhost:3001/api/bills/91d9c0a7-054d-4ecb-8e42-f2ed5db02d08 | jq
 ```
 
 Returns:
+
 ```json
 {
   "id": "91d9c0a7-054d-4ecb-8e42-f2ed5db02d08",
@@ -58,12 +61,14 @@ Returns:
 ```
 
 **partner-bff** — Reduced B2B payload:
+
 ```bash
 curl -H "X-Partner-Key: demo-partner-key" \
      http://localhost:3002/partner/bills/91d9c0a7-054d-4ecb-8e42-f2ed5db02d08 | jq
 ```
 
 Returns:
+
 ```json
 {
   "billId": "91d9c0a7-054d-4ecb-8e42-f2ed5db02d08",
@@ -80,23 +85,27 @@ Returns:
 ### Auth Boundary Isolation
 
 **Bearer token fails on partner-bff:**
+
 ```bash
 curl -H "Authorization: Bearer demo-token" \
      http://localhost:3002/partner/bills/91d9c0a7-054d-4ecb-8e42-f2ed5db02d08
 ```
 
 Returns:
+
 ```json
 { "error": "Unauthorized", "requestId": "..." }
 ```
 
 **API key fails on web-bff:**
+
 ```bash
 curl -H "X-Partner-Key: demo-partner-key" \
      http://localhost:3001/api/bills/91d9c0a7-054d-4ecb-8e42-f2ed5db02d08
 ```
 
 Returns:
+
 ```json
 { "error": "Unauthorized", "requestId": "..." }
 ```
@@ -106,6 +115,7 @@ Returns:
 ### Payment Pattern Differences
 
 **web-bff** — Synchronous (201 Created):
+
 ```bash
 curl -X POST -H "Authorization: Bearer demo-token" \
      -H "Content-Type: application/json" \
@@ -116,6 +126,7 @@ curl -X POST -H "Authorization: Bearer demo-token" \
 Returns 201 with full payment object.
 
 **partner-bff** — Asynchronous (202 Accepted + webhook):
+
 ```bash
 curl -X POST -H "X-Partner-Key: demo-partner-key" \
      -H "Content-Type: application/json" \
@@ -124,6 +135,7 @@ curl -X POST -H "X-Partner-Key: demo-partner-key" \
 ```
 
 Returns:
+
 ```json
 {
   "requestId": "...",
@@ -133,6 +145,7 @@ Returns:
 ```
 
 partner-bff terminal logs:
+
 ```
 CALLBACK SIMULATION: would POST { billId: "...", paymentId: "...", status: "completed" } to https://partner.example.com/webhook
 ```
@@ -142,6 +155,7 @@ CALLBACK SIMULATION: would POST { billId: "...", paymentId: "...", status: "comp
 ### Balance Validation — Same Rule, Both BFFs
 
 **web-bff:**
+
 ```bash
 curl -X POST -H "Authorization: Bearer demo-token" \
      -H "Content-Type: application/json" \
@@ -152,6 +166,7 @@ curl -X POST -H "Authorization: Bearer demo-token" \
 Returns 422: `"error": "Amount 999 exceeds balance 275"`
 
 **partner-bff:**
+
 ```bash
 curl -X POST -H "X-Partner-Key: demo-partner-key" \
      -H "Content-Type: application/json" \
@@ -168,6 +183,7 @@ Returns 422: `"error": "Amount 999 exceeds balance 275"`
 ## Domain APIs Unchanged
 
 Notice that:
+
 - `apps/bills-api/` was not modified to support partner-bff
 - `apps/payments-api/` was not modified to support partner-bff
 

@@ -51,7 +51,9 @@ function assertPaymentCreatedShape(p: unknown): asserts p is PaymentCreated {
   expect(typeof obj['requestId']).toBe('string');
 }
 
-function assertAmountExceedsBalanceShape(e: unknown): asserts e is AmountExceedsBalanceError {
+function assertAmountExceedsBalanceShape(
+  e: unknown,
+): asserts e is AmountExceedsBalanceError {
   const obj = e as Record<string, unknown>;
   expect(obj['error']).toBe('amount_exceeds_balance');
   // balance MUST be present — payment-mfe renders it in the error message

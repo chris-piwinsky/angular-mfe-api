@@ -1,87 +1,6 @@
 <div class="mfe-boundary">
-@if (selectedBillId() === null) {
-  <!-- Bill List View -->
-  <div class="flow-path">
-    <span class="flow-node shell">shell-app :4200</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-node mfe">bills-mfe :4201</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-node bff">web-bff :3001</span>
-    <span class="flow-arrow">→</span>
-    <span class="flow-node api">bills-api :4001</span>
-  </div>
-
-  <div class="filter-tabs">
-    @for (f of filters; track f.value) {
-      <button
-        class="filter-tab"
-        [class.active]="statusFilter() === f.value"
-        (click)="setFilter(f.value)">
-        {{ f.label }}
-      </button>
-    }
-  </div>
-
-  @if (bills.isLoading()) {
-    <div class="loading-skeleton">
-      <div class="skeleton-row"></div>
-      <div class="skeleton-row"></div>
-      <div class="skeleton-row"></div>
-    </div>
-  } @else if (bills.error()) {
-    <div class="error-message">
-      <p>Unable to load bills. Please check the BFF is running and try again.</p>
-    </div>
-  } @else {
-    <table class="bills-table">
-      <thead>
-        <tr>
-          <th>Invoice #</th>
-          <th>Billing Period</th>
-          <th>Due Date</th>
-          <th>Total</th>
-          <th>Balance</th>
-          <th>Status</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (bill of billsData(); track bill.id) {
-          <tr (click)="selectBill(bill.id)" class="bill-row">
-            <td>{{ bill.invoiceNumber }}</td>
-            <td>{{ bill.billingPeriod.start | date:'mediumDate' }} – {{ bill.billingPeriod.end | date:'mediumDate' }}</td>
-            <td>{{ bill.dueDate | date:'mediumDate' }}</td>
-            <td>{{ bill.totalAmount | currency }}</td>
-            <td>{{ bill.balance | currency }}</td>
-            <td>
-              <span class="status-badge" [class]="'status-' + bill.status">
-                {{ bill.status }}
-              </span>
-            </td>
-            <td>
-              @if (isPayable(bill.status)) {
-                <button class="pay-btn" (click)="payNow(bill.id, $event)">Pay Now</button>
-              }
-            </td>
-          </tr>
-        } @empty {
-          <tr><td colspan="7" class="empty-message">No bills found.</td></tr>
-        }
-      </tbody>
-    </table>
-  }
-} @else {
-  <!-- Bill Detail View -->
-  @if (billDetail.isLoading()) {
-    <div class="loading-skeleton">
-      <div class="skeleton-row"></div>
-      <div class="skeleton-row"></div>
-    </div>
-  } @else if (billDetail.error()) {
-    <div class="error-message">
-      <p>Unable to load bill details. Please try again.</p>
-    </div>
-  } @else if (billDetailData(); as bill) {
+  @if (selectedBillId() === null) {
+    <!-- Bill List View -->
     <div class="flow-path">
       <span class="flow-node shell">shell-app :4200</span>
       <span class="flow-arrow">→</span>
@@ -90,91 +9,197 @@
       <span class="flow-node bff">web-bff :3001</span>
       <span class="flow-arrow">→</span>
       <span class="flow-node api">bills-api :4001</span>
-      <span class="flow-plus">+</span>
-      <span class="flow-node api">payments-api :4002</span>
-      <span class="flow-label">(aggregated)</span>
     </div>
 
-    <div class="detail-header">
-      <button class="back-btn" (click)="backToList()">← Back to Bills</button>
-      @if (isPayable(bill.status)) {
-        <button class="pay-btn" (click)="payNow(bill.id, $event)">Pay Now</button>
+    <div class="filter-tabs">
+      @for (f of filters; track f.value) {
+        <button
+          class="filter-tab"
+          [class.active]="statusFilter() === f.value"
+          (click)="setFilter(f.value)"
+        >
+          {{ f.label }}
+        </button>
       }
     </div>
 
-    <section class="bill-meta">
-      <dl>
-        <dt>Invoice #</dt><dd>{{ bill.invoiceNumber }}</dd>
-        <dt>Account ID</dt><dd>{{ bill.accountId }}</dd>
-        <dt>Billing Period</dt>
-        <dd>{{ bill.billingPeriod.start | date:'mediumDate' }} – {{ bill.billingPeriod.end | date:'mediumDate' }}</dd>
-        <dt>Issued Date</dt><dd>{{ bill.issuedDate | date:'mediumDate' }}</dd>
-        <dt>Due Date</dt><dd>{{ bill.dueDate | date:'mediumDate' }}</dd>
-        <dt>Status</dt>
-        <dd><span class="status-badge" [class]="'status-' + bill.status">{{ bill.status }}</span></dd>
-      </dl>
-    </section>
-
-    <section>
-      <h3>Line Items</h3>
-      <table class="line-items-table">
+    @if (bills.isLoading()) {
+      <div class="loading-skeleton">
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+      </div>
+    } @else if (bills.error()) {
+      <div class="error-message">
+        <p>
+          Unable to load bills. Please check the BFF is running and try again.
+        </p>
+      </div>
+    } @else {
+      <table class="bills-table">
         <thead>
           <tr>
-            <th>Description</th>
-            <th>Qty</th>
-            <th>Unit Price</th>
-            <th>Line Total</th>
+            <th>Invoice #</th>
+            <th>Billing Period</th>
+            <th>Due Date</th>
+            <th>Total</th>
+            <th>Balance</th>
+            <th>Status</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          @for (item of bill.lineItems; track item.description) {
+          @for (bill of billsData(); track bill.id) {
+            <tr (click)="selectBill(bill.id)" class="bill-row">
+              <td>{{ bill.invoiceNumber }}</td>
+              <td>
+                {{ bill.billingPeriod.start | date: 'mediumDate' }} –
+                {{ bill.billingPeriod.end | date: 'mediumDate' }}
+              </td>
+              <td>{{ bill.dueDate | date: 'mediumDate' }}</td>
+              <td>{{ bill.totalAmount | currency }}</td>
+              <td>{{ bill.balance | currency }}</td>
+              <td>
+                <span class="status-badge" [class]="'status-' + bill.status">
+                  {{ bill.status }}
+                </span>
+              </td>
+              <td>
+                @if (isPayable(bill.status)) {
+                  <button class="pay-btn" (click)="payNow(bill.id, $event)">
+                    Pay Now
+                  </button>
+                }
+              </td>
+            </tr>
+          } @empty {
             <tr>
-              <td>{{ item.description }}</td>
-              <td>{{ item.quantity }}</td>
-              <td>{{ item.unitPrice | currency }}</td>
-              <td>{{ item.lineTotal | currency }}</td>
+              <td colspan="7" class="empty-message">No bills found.</td>
             </tr>
           }
         </tbody>
       </table>
-    </section>
+    }
+  } @else {
+    <!-- Bill Detail View -->
+    @if (billDetail.isLoading()) {
+      <div class="loading-skeleton">
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+      </div>
+    } @else if (billDetail.error()) {
+      <div class="error-message">
+        <p>Unable to load bill details. Please try again.</p>
+      </div>
+    } @else if (billDetailData(); as bill) {
+      <div class="flow-path">
+        <span class="flow-node shell">shell-app :4200</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-node mfe">bills-mfe :4201</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-node bff">web-bff :3001</span>
+        <span class="flow-arrow">→</span>
+        <span class="flow-node api">bills-api :4001</span>
+        <span class="flow-plus">+</span>
+        <span class="flow-node api">payments-api :4002</span>
+        <span class="flow-label">(aggregated)</span>
+      </div>
 
-    <section class="bill-summary">
-      <dl>
-        <dt>Total Amount</dt><dd>{{ bill.totalAmount | currency }}</dd>
-        <dt>Amount Paid</dt><dd>{{ bill.amountPaid | currency }}</dd>
-        <dt>Balance Due</dt><dd class="balance-due">{{ bill.balance | currency }}</dd>
-      </dl>
-    </section>
+      <div class="detail-header">
+        <button class="back-btn" (click)="backToList()">← Back to Bills</button>
+        @if (isPayable(bill.status)) {
+          <button class="pay-btn" (click)="payNow(bill.id, $event)">
+            Pay Now
+          </button>
+        }
+      </div>
 
-    <section class="payment-history">
-      <h3>Payment History</h3>
-      @if (bill.payments && bill.payments.length > 0) {
-        <table>
+      <section class="bill-meta">
+        <dl>
+          <dt>Invoice #</dt>
+          <dd>{{ bill.invoiceNumber }}</dd>
+          <dt>Account ID</dt>
+          <dd>{{ bill.accountId }}</dd>
+          <dt>Billing Period</dt>
+          <dd>
+            {{ bill.billingPeriod.start | date: 'mediumDate' }} –
+            {{ bill.billingPeriod.end | date: 'mediumDate' }}
+          </dd>
+          <dt>Issued Date</dt>
+          <dd>{{ bill.issuedDate | date: 'mediumDate' }}</dd>
+          <dt>Due Date</dt>
+          <dd>{{ bill.dueDate | date: 'mediumDate' }}</dd>
+          <dt>Status</dt>
+          <dd>
+            <span class="status-badge" [class]="'status-' + bill.status">{{
+              bill.status
+            }}</span>
+          </dd>
+        </dl>
+      </section>
+
+      <section>
+        <h3>Line Items</h3>
+        <table class="line-items-table">
           <thead>
             <tr>
-              <th>Date</th>
-              <th>Method</th>
-              <th>Amount</th>
-              <th>Status</th>
+              <th>Description</th>
+              <th>Qty</th>
+              <th>Unit Price</th>
+              <th>Line Total</th>
             </tr>
           </thead>
           <tbody>
-            @for (payment of bill.payments; track payment.id) {
+            @for (item of bill.lineItems; track item.description) {
               <tr>
-                <td>{{ payment.createdAt | date:'medium' }}</td>
-                <td>{{ payment.method | uppercase }}</td>
-                <td>{{ payment.amount | currency }}</td>
-                <td>{{ payment.status }}</td>
+                <td>{{ item.description }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unitPrice | currency }}</td>
+                <td>{{ item.lineTotal | currency }}</td>
               </tr>
             }
           </tbody>
         </table>
-      } @else {
-        <p class="empty-message">No payments recorded for this bill.</p>
-      }
-    </section>
-  }
-}
-  </div>
+      </section>
 
+      <section class="bill-summary">
+        <dl>
+          <dt>Total Amount</dt>
+          <dd>{{ bill.totalAmount | currency }}</dd>
+          <dt>Amount Paid</dt>
+          <dd>{{ bill.amountPaid | currency }}</dd>
+          <dt>Balance Due</dt>
+          <dd class="balance-due">{{ bill.balance | currency }}</dd>
+        </dl>
+      </section>
+
+      <section class="payment-history">
+        <h3>Payment History</h3>
+        @if (bill.payments && bill.payments.length > 0) {
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Method</th>
+                <th>Amount</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (payment of bill.payments; track payment.id) {
+                <tr>
+                  <td>{{ payment.createdAt | date: 'medium' }}</td>
+                  <td>{{ payment.method | uppercase }}</td>
+                  <td>{{ payment.amount | currency }}</td>
+                  <td>{{ payment.status }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        } @else {
+          <p class="empty-message">No payments recorded for this bill.</p>
+        }
+      </section>
+    }
+  }
+</div>

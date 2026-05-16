@@ -8,13 +8,16 @@ export const archGuardInterceptor: HttpInterceptorFn = (req, next) => {
   if (!req.url.startsWith(config.bffBaseUrl)) {
     console.warn(
       '[ARCH VIOLATION] Micro frontend is calling a domain API directly. ' +
-        'All requests must go through the BFF.'
+        'All requests must go through the BFF.',
     );
 
-    if (req.method === 'POST' && (req.url.includes(':4001') || req.url.includes('bills-api'))) {
+    if (
+      req.method === 'POST' &&
+      (req.url.includes(':4001') || req.url.includes('bills-api'))
+    ) {
       console.warn(
         '[ARCH VIOLATION] payment-mfe must not call bills-api directly. ' +
-          'Use /api/payments via the BFF.'
+          'Use /api/payments via the BFF.',
       );
     }
   }

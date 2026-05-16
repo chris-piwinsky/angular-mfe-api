@@ -1,52 +1,135 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # health-check.sh - Verify all services are responding
+#
+# Usage:
+#   ./health-check.sh
+#   ./health-check.sh --wait
+#   ./health-check.sh --wait=120 --verbose
 
-set -e
+set -euo pipefail
 
-echo "🔍 Checking service health..."
-echo ""
+WAIT_MODE=false
+TIMEOUT_SECONDS=60
+VERBOSE=false
 
-ALL_HEALTHY=true
+for arg in "$@"; do
+  case "$arg" in
+    --wait)
+      WAIT_MODE=true
+      ;;
+    --wait=*)
+      WAIT_MODE=true
+      TIMEOUT_SECONDS="${arg#*=}"
+      ;;
+    --verbose)
+      VERBOSE=true
+      ;;
+    *)
+      echo "Unknown option: $arg"
+      echo "Usage: ./health-check.sh [--wait|--wait=<seconds>] [--verbose]"
+      exit 2
+      ;;
+  esac
+done
 
-check_service() {
-  local name=$1
-  local url=$2
-  local auth_header=$3
+SERVICES=(
+  "bills-api|http://localhost:4001/health"
+  "payments-api|http://localhost:4002/health"
+  "web-bff|http://localhost:3001/health"
+  "partner-bff|http://localhost:3002/health"
+  "bills-mfe|http://localhost:4201/"
+  "payment-mfe|http://localhost:4202/"
+  "shell-app|http://localhost:4200/"
+)
 
-  if [ -n "$auth_header" ]; then
-    response=$(curl -s -o /dev/null -w "%{http_code}" -H "$auth_header" "$url" 2>/dev/null || echo "000")
-  else
+check_once() {
+  local all_healthy=true
+
+  if [ "$VERBOSE" = true ]; then
+    echo ""
+    echo "🔍 Checking service health..."
+  fi
+
+  for entry in "${SERVICES[@]}"; do
+    local name="${entry%%|*}"
+    local url="${entry#*|}"
+    local response
+
     response=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
+
+    if [ "$response" = "200" ]; then
+      if [ "$VERBOSE" = true ]; then
+        echo "✅ $name ($url)"
+      fi
+    else
+      all_healthy=false
+      if [ "$VERBOSE" = true ]; then
+        echo "❌ $name ($url) - HTTP $response"
+      fi
+    fi
+  done
+
+  if [ "$all_healthy" = true ]; then
+    return 0
   fi
 
-  if [ "$response" = "200" ]; then
-    echo "✅ $name ($url)"
-  else
-    echo "❌ $name ($url) - HTTP $response"
-    ALL_HEALTHY=false
-  fi
+  return 1
 }
 
-# Domain APIs
-check_service "bills-api" "http://localhost:4001/health"
-check_service "payments-api" "http://localhost:4002/health"
+if [ "$WAIT_MODE" = false ]; then
+  echo "🔍 Checking service health..."
+  echo ""
 
-# BFFs (health endpoints are public, no auth required)
-check_service "web-bff" "http://localhost:3001/health"
-check_service "partner-bff" "http://localhost:3002/health"
-
-# Angular MFEs (check root path)
-check_service "bills-mfe" "http://localhost:4201/"
-check_service "payment-mfe" "http://localhost:4202/"
-check_service "shell-app" "http://localhost:4200/"
-
-echo ""
-
-if [ "$ALL_HEALTHY" = true ]; then
-  echo "✅ All services healthy"
-  exit 0
-else
-  echo "❌ Some services are down"
-  exit 1
+  if check_once; then
+    for entry in "${SERVICES[@]}"; do
+      name="${entry%%|*}"
+      url="${entry#*|}"
+      echo "✅ $name ($url)"
+    done
+    echo ""
+    echo "✅ All services healthy"
+    exit 0
+  else
+    for entry in "${SERVICES[@]}"; do
+      name="${entry%%|*}"
+      url="${entry#*|}"
+      response=$(curl -s -o /dev/null -w "%{http_code}" "$url" 2>/dev/null || echo "000")
+      if [ "$response" = "200" ]; then
+        echo "✅ $name ($url)"
+      else
+        echo "❌ $name ($url) - HTTP $response"
+      fi
+    done
+    echo ""
+    echo "❌ Some services are down"
+    exit 1
+  fi
 fi
+
+echo "⏳ Waiting for services to become healthy (timeout: ${TIMEOUT_SECONDS}s)..."
+start_time=$(date +%s)
+
+while true; do
+  if check_once; then
+    echo ""
+    echo "✅ All services healthy"
+    exit 0
+  fi
+
+  now=$(date +%s)
+  elapsed=$((now - start_time))
+
+  if [ "$elapsed" -ge "$TIMEOUT_SECONDS" ]; then
+    echo ""
+    echo "❌ Timed out waiting for healthy services after ${TIMEOUT_SECONDS}s"
+    echo "Tip: rerun with --verbose to see failing endpoints"
+    exit 1
+  fi
+
+  if [ "$VERBOSE" = true ]; then
+    echo "⏱️  ${elapsed}s elapsed... retrying in 2s"
+  fi
+
+  sleep 2
+done

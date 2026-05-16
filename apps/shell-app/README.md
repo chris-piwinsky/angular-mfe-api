@@ -32,11 +32,11 @@ The following rules are enforced by convention. Violations are caught by the `ar
 
 ## Port Reference
 
-| App | Port |
-|---|---|
-| `shell-app` | 4200 |
-| `bills-mfe` | 4201 |
-| `payment-mfe` | 4202 |
-| `web-bff` | 3001 |
-| `bills-api` | 4001 |
+| App            | Port |
+| -------------- | ---- |
+| `shell-app`    | 4200 |
+| `bills-mfe`    | 4201 |
+| `payment-mfe`  | 4202 |
+| `web-bff`      | 3001 |
+| `bills-api`    | 4001 |
 | `payments-api` | 4002 |
