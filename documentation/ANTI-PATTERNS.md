@@ -20,7 +20,7 @@ Guardrails in repo:
 
 Architecture rule:
 
-- https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#a3
+- [suite-architecture-standards.md#a3](./suite-architecture-standards.md#a3)
 
 ---
 
@@ -42,7 +42,7 @@ Preferred pattern in repo:
 
 Architecture rule:
 
-- https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#a9
+- [suite-architecture-standards.md#a9](./suite-architecture-standards.md#a9)
 
 ---
 
@@ -64,7 +64,7 @@ Guardrail in repo:
 
 Architecture rule:
 
-- https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#a3
+- [suite-architecture-standards.md#a3](./suite-architecture-standards.md#a3)
 
 ---
 
@@ -87,7 +87,7 @@ Preferred pattern in repo:
 
 Architecture rule:
 
-- https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#a2
+- [suite-architecture-standards.md#a2](./suite-architecture-standards.md#a2)
 
 ---
 
@@ -114,8 +114,8 @@ Code references:
 
 Architecture rules:
 
-- https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#a8
-- https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#e10
+- [suite-architecture-standards.md#a8](./suite-architecture-standards.md#a8)
+- [suite-architecture-standards.md#e10](./suite-architecture-standards.md#e10)
 
 ---
 

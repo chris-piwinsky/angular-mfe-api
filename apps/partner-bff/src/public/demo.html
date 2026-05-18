@@ -234,6 +234,7 @@
       <button onclick="fetchBillDetail()">📄 Get Bill Detail</button>
       <button onclick="submitPayment()">💳 Submit Payment</button>
       <button onclick="testValidation()">⚠️ Test Balance Validation</button>
+      <div id="bill-status" style="margin-top:8px;font-size:0.85em;color:#999">Loading bill data…</div>
     </div>
 
     <div class="results" id="results">
@@ -253,9 +254,31 @@
   </div>
 
   <script>
-    const BILL_ID = '3ccb99bc-cea5-4245-ade2-3e1a23993f4c';
+    let billId = null;
     const WEB_BFF = 'http://localhost:3001';
     const PARTNER_BFF = 'http://localhost:3002';
+
+    async function initializeBillId() {
+      const statusEl = document.getElementById('bill-status');
+      try {
+        const res = await fetch(`${WEB_BFF}/api/bills`, {
+          headers: { 'Authorization': 'Bearer demo-token' }
+        });
+        const json = await res.json();
+        billId = json.data && json.data[0] ? json.data[0].id : null;
+        if (statusEl) {
+          statusEl.textContent = billId
+            ? `Connected — bill: ${billId.slice(0, 8)}…`
+            : '⚠️ No bills found';
+          statusEl.style.color = billId ? '#2e7d32' : '#c62828';
+        }
+      } catch {
+        if (statusEl) {
+          statusEl.textContent = '⚠️ Could not load bill data — is the stack running?';
+          statusEl.style.color = '#c62828';
+        }
+      }
+    }
 
     function showLoading() {
       document.getElementById('web-result').innerHTML = '<div class="spinner"></div><p>Loading...</p>';
@@ -286,30 +309,35 @@
     }
 
     async function fetchBillDetail() {
+      if (!billId) {
+        document.getElementById('web-result').innerHTML = '<p style="color:orange">⚠️ Bill data still loading — wait a moment and retry.</p>';
+        document.getElementById('partner-result').innerHTML = '<p style="color:orange">⚠️ Bill data still loading — wait a moment and retry.</p>';
+        return;
+      }
       showLoading();
       try {
         // web-bff
-        const webRes = await fetch(`${WEB_BFF}/api/bills/${BILL_ID}`, {
+        const webRes = await fetch(`${WEB_BFF}/api/bills/${billId}`, {
           headers: { 'Authorization': 'Bearer demo-token' }
         });
         const webData = await webRes.json();
         renderResult(
           'web-result',
           webRes.status,
-          `GET /api/bills/${BILL_ID}\nAuthorization: Bearer demo-token`,
+          `GET /api/bills/${billId}\nAuthorization: Bearer demo-token`,
           webData,
           `✓ Full bill: ${Object.keys(webData).length} fields including lineItems[], payments[]`
         );
 
         // partner-bff
-        const partnerRes = await fetch(`${PARTNER_BFF}/partner/bills/${BILL_ID}`, {
+        const partnerRes = await fetch(`${PARTNER_BFF}/partner/bills/${billId}`, {
           headers: { 'X-Partner-Key': 'demo-partner-key' }
         });
         const partnerData = await partnerRes.json();
         renderResult(
           'partner-result',
           partnerRes.status,
-          `GET /partner/bills/${BILL_ID}\nX-Partner-Key: demo-partner-key`,
+          `GET /partner/bills/${billId}\nX-Partner-Key: demo-partner-key`,
           partnerData,
           `✓ Reduced payload: Only ${Object.keys(partnerData).length} fields (billId, accountId, balance, dueDate, status)`
         );
@@ -320,9 +348,14 @@
     }
 
     async function submitPayment() {
+      if (!billId) {
+        document.getElementById('web-result').innerHTML = '<p style="color:orange">⚠️ Bill data still loading — wait a moment and retry.</p>';
+        document.getElementById('partner-result').innerHTML = '<p style="color:orange">⚠️ Bill data still loading — wait a moment and retry.</p>';
+        return;
+      }
       showLoading();
       const payload = {
-        billId: BILL_ID,
+        billId: billId,
         amount: 50,
         method: 'card',
         maskedAccount: '4242'
@@ -349,7 +382,7 @@
 
         // partner-bff
         const partnerPayload = {
-          billId: BILL_ID,
+          billId: billId,
           amount: 50,
           callbackUrl: 'https://partner.example.com/webhook'
         };
@@ -376,9 +409,14 @@
     }
 
     async function testValidation() {
+      if (!billId) {
+        document.getElementById('web-result').innerHTML = '<p style="color:orange">⚠️ Bill data still loading — wait a moment and retry.</p>';
+        document.getElementById('partner-result').innerHTML = '<p style="color:orange">⚠️ Bill data still loading — wait a moment and retry.</p>';
+        return;
+      }
       showLoading();
       const invalidPayload = {
-        billId: BILL_ID,
+        billId: billId,
         amount: 999,
         method: 'card',
         maskedAccount: '4242'
@@ -405,7 +443,7 @@
 
         // partner-bff
         const partnerPayload = {
-          billId: BILL_ID,
+          billId: billId,
           amount: 999,
           callbackUrl: 'https://partner.example.com/webhook'
         };
@@ -430,6 +468,8 @@
         document.getElementById('partner-result').innerHTML = `<p style="color:red">Error: ${err.message}</p>`;
       }
     }
+
+    initializeBillId();
   </script>
 </body>
 </html>

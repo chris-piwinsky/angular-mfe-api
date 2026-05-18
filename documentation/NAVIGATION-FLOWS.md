@@ -42,7 +42,7 @@ sequenceDiagram
     S-->>B: Shell rendered, nav badge set
 ```
 
-**Pattern:** [A2](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#a2) — Module Federation host. [A9](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#a9) — Remotes never imported as npm packages.
+**Pattern:** [A2](./suite-architecture-standards.md#a2) — Module Federation host. [A9](./suite-architecture-standards.md#a9) — Remotes never imported as npm packages.
 
 ---
 
@@ -71,7 +71,7 @@ sequenceDiagram
     BM-->>B: Bills table rendered
 ```
 
-**Pattern:** [A3](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#a3) — MFE calls BFF only. bills-mfe never calls bills-api directly. [E4](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#e4) — Auth validated at BFF; domain APIs receive no tokens.
+**Pattern:** [A3](./suite-architecture-standards.md#a3) — MFE calls BFF only. bills-mfe never calls bills-api directly. [E4](./suite-architecture-standards.md#e4) — Auth validated at BFF; domain APIs receive no tokens.
 
 ---
 
@@ -96,7 +96,7 @@ sequenceDiagram
     BM-->>B: Table re-renders with filtered rows
 ```
 
-**Pattern:** [E3](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#e3) — Data at the right granularity; list view requests only summary fields. Signal reactivity — `computed()` drives re-fetch automatically.
+**Pattern:** [E3](./suite-architecture-standards.md#e3) — Data at the right granularity; list view requests only summary fields. Signal reactivity — `computed()` drives re-fetch automatically.
 
 ---
 
@@ -130,7 +130,7 @@ sequenceDiagram
     BM-->>B: Bill detail panel rendered
 ```
 
-**Pattern:** [E3](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#e3) — 1 BFF call → 2 domain APIs → 1 merged response. [E5](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#e5) — Graceful degradation: payments-api down returns `payments: []`, not 500.
+**Pattern:** [E3](./suite-architecture-standards.md#e3) — 1 BFF call → 2 domain APIs → 1 merged response. [E5](./suite-architecture-standards.md#e5) — Graceful degradation: payments-api down returns `payments: []`, not 500.
 
 ---
 
@@ -156,7 +156,7 @@ sequenceDiagram
     PM-->>B: Payment form rendered
 ```
 
-**Pattern:** [A9](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#a9) — Cross-MFE communication via namespaced `suite:*` CustomEvents. MFEs are fully decoupled; either can be deployed independently.
+**Pattern:** [A9](./suite-architecture-standards.md#a9) — Cross-MFE communication via namespaced `suite:*` CustomEvents. MFEs are fully decoupled; either can be deployed independently.
 
 ---
 
@@ -189,7 +189,7 @@ sequenceDiagram
     end
 ```
 
-**Pattern:** [A3](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#a3) — Balance guard lives at the BFF. [E4](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#e4) — Auth at the BFF boundary. PCI scope: `maskedAccount` carries last 4 digits only — full card data never transits BFF or MFEs.
+**Pattern:** [A3](./suite-architecture-standards.md#a3) — Balance guard lives at the BFF. [E4](./suite-architecture-standards.md#e4) — Auth at the BFF boundary. PCI scope: `maskedAccount` carries last 4 digits only — full card data never transits BFF or MFEs.
 
 ---
 
@@ -223,7 +223,7 @@ sequenceDiagram
     S-->>B: Bills list view restored
 ```
 
-**Pattern:** [A9](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#a9) — Shell owns its own state refresh. MFEs communicate intent only — the shell decides how to respond. [E10](https://github.com/chris-piwinsky/angular-mfe-api/blob/main/documentation/suite-architecture-standards.md#e10) — Every BFF request logged with `correlationId` flowing from shell → BFF → bills-api.
+**Pattern:** [A9](./suite-architecture-standards.md#a9) — Shell owns its own state refresh. MFEs communicate intent only — the shell decides how to respond. [E10](./suite-architecture-standards.md#e10) — Every BFF request logged with `correlationId` flowing from shell → BFF → bills-api.
 
 ---
 

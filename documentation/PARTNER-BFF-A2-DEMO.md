@@ -50,7 +50,7 @@ The demo page shows side-by-side comparisons of web-bff vs partner-bff responses
 | **Auth**                | Bearer token (`Authorization: Bearer demo-token`)                       | API key (`X-Partner-Key: demo-partner-key`)               |
 | **Bills payload**       | Full bill object: invoiceNumber, billingPeriod, lineItems[], payments[] | Reduced: billId, accountId, balance, dueDate, status only |
 | **Payment response**    | 201 Created (synchronous)                                               | 202 Accepted (webhook pattern)                            |
-| **CORS**                | Enabled (browser consumer)                                              | Disabled (server-to-server)                               |
+| **CORS**                | Enabled — allows localhost:4200 (shell-app) and localhost:3002 (demo page) | Disabled (server-to-server)                            |
 | **x-arch-note headers** | Yes (learning demo)                                                     | No (production-like)                                      |
 
 ---
@@ -63,14 +63,14 @@ The demo page shows side-by-side comparisons of web-bff vs partner-bff responses
 
 ```bash
 curl -H "Authorization: Bearer demo-token" \
-     http://localhost:3001/api/bills/91d9c0a7-054d-4ecb-8e42-f2ed5db02d08 | jq
+     http://localhost:3001/api/bills/b1110001-0000-0000-0000-000000000001 | jq
 ```
 
 Returns:
 
 ```json
 {
-  "id": "91d9c0a7-054d-4ecb-8e42-f2ed5db02d08",
+  "id": "b1110001-0000-0000-0000-000000000001",
   "accountId": "acct-001",
   "invoiceNumber": "INV-2026-0049",
   "billingPeriod": { "start": "2026-04-01", "end": "2026-04-30" },
@@ -93,14 +93,14 @@ Returns:
 
 ```bash
 curl -H "X-Partner-Key: demo-partner-key" \
-     http://localhost:3002/partner/bills/91d9c0a7-054d-4ecb-8e42-f2ed5db02d08 | jq
+     http://localhost:3002/partner/bills/b1110001-0000-0000-0000-000000000001 | jq
 ```
 
 Returns:
 
 ```json
 {
-  "billId": "91d9c0a7-054d-4ecb-8e42-f2ed5db02d08",
+  "billId": "b1110001-0000-0000-0000-000000000001",
   "accountId": "acct-001",
   "balance": 275,
   "dueDate": "2026-06-01",
@@ -117,7 +117,7 @@ Returns:
 
 ```bash
 curl -H "Authorization: Bearer demo-token" \
-     http://localhost:3002/partner/bills/91d9c0a7-054d-4ecb-8e42-f2ed5db02d08
+     http://localhost:3002/partner/bills/b1110001-0000-0000-0000-000000000001
 ```
 
 Returns:
@@ -130,7 +130,7 @@ Returns:
 
 ```bash
 curl -H "X-Partner-Key: demo-partner-key" \
-     http://localhost:3001/api/bills/91d9c0a7-054d-4ecb-8e42-f2ed5db02d08
+     http://localhost:3001/api/bills/b1110001-0000-0000-0000-000000000001
 ```
 
 Returns:
@@ -148,7 +148,7 @@ Returns:
 ```bash
 curl -X POST -H "Authorization: Bearer demo-token" \
      -H "Content-Type: application/json" \
-     -d '{"billId":"91d9c0a7-054d-4ecb-8e42-f2ed5db02d08","amount":50,"method":"card","maskedAccount":"4242"}' \
+     -d '{"billId":"b1110001-0000-0000-0000-000000000001","amount":50,"method":"card","maskedAccount":"4242"}' \
      http://localhost:3001/api/payments
 ```
 
@@ -159,7 +159,7 @@ Returns 201 with full payment object.
 ```bash
 curl -X POST -H "X-Partner-Key: demo-partner-key" \
      -H "Content-Type: application/json" \
-     -d '{"billId":"91d9c0a7-054d-4ecb-8e42-f2ed5db02d08","amount":50,"callbackUrl":"https://partner.example.com/webhook"}' \
+     -d '{"billId":"b1110001-0000-0000-0000-000000000001","amount":50,"callbackUrl":"https://partner.example.com/webhook"}' \
      http://localhost:3002/partner/payments
 ```
 
@@ -188,7 +188,7 @@ CALLBACK SIMULATION: would POST { billId: "...", paymentId: "...", status: "comp
 ```bash
 curl -X POST -H "Authorization: Bearer demo-token" \
      -H "Content-Type: application/json" \
-     -d '{"billId":"91d9c0a7-054d-4ecb-8e42-f2ed5db02d08","amount":999,"method":"card","maskedAccount":"4242"}' \
+     -d '{"billId":"b1110001-0000-0000-0000-000000000001","amount":999,"method":"card","maskedAccount":"4242"}' \
      http://localhost:3001/api/payments
 ```
 
@@ -199,7 +199,7 @@ Returns 422: `"error": "Amount 999 exceeds balance 275"`
 ```bash
 curl -X POST -H "X-Partner-Key: demo-partner-key" \
      -H "Content-Type: application/json" \
-     -d '{"billId":"91d9c0a7-054d-4ecb-8e42-f2ed5db02d08","amount":999,"callbackUrl":"https://partner.example.com/webhook"}' \
+     -d '{"billId":"b1110001-0000-0000-0000-000000000001","amount":999,"callbackUrl":"https://partner.example.com/webhook"}' \
      http://localhost:3002/partner/payments
 ```
 

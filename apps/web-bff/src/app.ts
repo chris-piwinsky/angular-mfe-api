@@ -25,7 +25,7 @@ export function createApp(): Application {
   app.use(requestLogger);
 
   app.get('/health', (_req: Request, res: Response) => {
-    res.json({ status: 'ok' });
+    res.json({ status: 'ok', surface: 'web' });
   });
 
   // All /api routes require auth

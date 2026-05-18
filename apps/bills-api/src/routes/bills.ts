@@ -1,12 +1,11 @@
 import { Router, Request, Response } from 'express';
-import { randomUUID } from 'crypto';
 import { bills } from '../data/bills';
 import { BillStatus } from '../types/bill';
 
 export const billsRouter = Router();
 
 billsRouter.get('/', (req: Request, res: Response) => {
-  const requestId = (req.headers['x-correlation-id'] as string) ?? randomUUID();
+  const requestId = res.locals['correlationId'] as string;
   const { status, accountId, limit = '20', offset = '0' } = req.query;
 
   let result = [...bills];
@@ -29,7 +28,7 @@ billsRouter.get('/', (req: Request, res: Response) => {
 });
 
 billsRouter.get('/:id', (req: Request, res: Response) => {
-  const requestId = (req.headers['x-correlation-id'] as string) ?? randomUUID();
+  const requestId = res.locals['correlationId'] as string;
   const bill = bills.find((b) => b.id === req.params.id);
 
   if (!bill) {

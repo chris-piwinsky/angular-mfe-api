@@ -51,7 +51,7 @@ export function createApp(): Application {
   // Serve static demo page at http://localhost:3002/demo.html
   // In dev mode (nx serve), serve from source; in production, serve from dist
   const publicDistPath = join(__dirname, 'public');
-  const publicSrcPath = join(__dirname, '..', '..', '..', 'apps', 'partner-bff', 'src', 'public');
+  const publicSrcPath = join(process.cwd(), 'apps', 'partner-bff', 'src', 'public');
   const publicPath = existsSync(publicDistPath) ? publicDistPath : publicSrcPath;
   app.use(express.static(publicPath));
 

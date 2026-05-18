@@ -7,7 +7,7 @@ export const paymentsRouter = Router();
 
 // GET /v1/payments?billId= — billId is required
 paymentsRouter.get('/', (req: Request, res: Response) => {
-  const requestId = (req.headers['x-correlation-id'] as string) ?? randomUUID();
+  const requestId = res.locals['correlationId'] as string;
   const { billId } = req.query;
 
   if (!billId) {
@@ -29,7 +29,7 @@ paymentsRouter.get('/', (req: Request, res: Response) => {
 
 // POST /v1/payments
 paymentsRouter.post('/', (req: Request, res: Response) => {
-  const requestId = (req.headers['x-correlation-id'] as string) ?? randomUUID();
+  const requestId = res.locals['correlationId'] as string;
   const body = req.body as PaymentRequest;
 
   if (
@@ -65,7 +65,7 @@ paymentsRouter.post('/', (req: Request, res: Response) => {
 
 // GET /v1/payments/:id
 paymentsRouter.get('/:id', (req: Request, res: Response) => {
-  const requestId = (req.headers['x-correlation-id'] as string) ?? randomUUID();
+  const requestId = res.locals['correlationId'] as string;
   const payment = payments.find((p) => p.id === req.params.id);
 
   if (!payment) {

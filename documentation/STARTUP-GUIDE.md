@@ -38,7 +38,9 @@ PORT=3001 npx nx serve web-bff --output-style=stream
 
 # Terminal 4 - partner-bff
 cd billing-portal
-PORT=3002 BILLS_API_URL=http://localhost:4001 PAYMENTS_API_URL=http://localhost:4002 npx nx serve partner-bff --output-style=stream
+PORT=3002 BILLS_API_URL=http://localhost:4001 PAYMENTS_API_URL=http://localhost:4002 ENABLE_DEMO_CORS=true npx nx serve partner-bff --output-style=stream
+
+> `ENABLE_DEMO_CORS=true` enables the visual demo page at http://localhost:3002/demo.html. Omit for production-like testing.
 
 # Terminal 5 - bills-mfe
 cd billing-portal
