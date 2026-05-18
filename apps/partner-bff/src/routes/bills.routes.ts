@@ -25,7 +25,10 @@ router.get('/bills', async (req: Request, res: Response) => {
   if (limit) params.set('limit', limit as string);
   if (offset) params.set('offset', offset as string);
 
-  const url = `${BILLS_API_URL}/v1/bills?${params}`;
+  const queryString = params.toString();
+  const url = queryString
+    ? `${BILLS_API_URL}/v1/bills?${queryString}`
+    : `${BILLS_API_URL}/v1/bills`;
 
   try {
     const response = await fetch(url, {

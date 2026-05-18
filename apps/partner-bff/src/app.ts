@@ -1,6 +1,7 @@
 import express, { Application } from 'express';
 import { correlationMiddleware } from './middleware/correlation.middleware.js';
 import { apikeyMiddleware } from './middleware/apikey.middleware.js';
+import { requestLogger } from './middleware/requestLogger.js';
 import billsRouter from './routes/bills.routes.js';
 import paymentsRouter from './routes/payments.routes.js';
 
@@ -12,6 +13,9 @@ export function createApp(): Application {
 
   // Correlation ID on all routes
   app.use(correlationMiddleware);
+
+  // Structured JSON request logging (E10)
+  app.use(requestLogger);
 
   // Health check (no auth required)
   app.get('/health', (req, res) => {

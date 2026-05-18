@@ -20,7 +20,7 @@
       <span class="flow-label">(CustomEvent → overdue badge refresh)</span>
     </div>
 
-    <div class="confirmation-panel">
+    <div class="confirmation-panel" role="status" aria-live="polite">
       <h2>Payment Submitted Successfully</h2>
       <p>
         Payment of <strong>{{ conf.amount | currency }}</strong> submitted
@@ -77,7 +77,7 @@
           id="amount"
           type="number"
           [value]="amount()"
-          (input)="onAmountChange($any($event.target).value)"
+          (input)="onAmountChange(($event.target as HTMLInputElement).value)"
           (blur)="amountTouched.set(true)"
           [attr.max]="b.balance"
           min="0.01"

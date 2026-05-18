@@ -125,7 +125,8 @@ export class AppComponent implements OnInit {
 
   onAmountChange(val: string): void {
     this.amountTouched.set(true);
-    this.amount.set(parseFloat(val) || 0);
+    const parsed = parseFloat(val);
+    this.amount.set(isNaN(parsed) ? 0 : parsed);
   }
 
   onLast4Change(val: string): void {

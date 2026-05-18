@@ -42,6 +42,16 @@ paymentsRouter.post('/', async (req: Request, res: Response) => {
   const correlationId: string = res.locals['correlationId'];
   const { billId, amount, method, maskedAccount } = req.body as PaymentRequest;
 
+  // Validate required string fields are present
+  if (!billId || !method || !maskedAccount) {
+    res.status(400).json({
+      error: 'missing_fields',
+      message: 'billId, method, and maskedAccount are required.',
+      requestId: correlationId,
+    });
+    return;
+  }
+
   // Validate amount is a positive number
   if (typeof amount !== 'number' || amount <= 0) {
     res.status(400).json({

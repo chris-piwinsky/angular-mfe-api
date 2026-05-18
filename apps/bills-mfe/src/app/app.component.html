@@ -23,6 +23,74 @@
       }
     </div>
 
+    <!-- Field Flow Panel -->
+    <div class="field-flow-panel">
+      <button
+        class="field-flow-header"
+        (click)="toggleFieldFlow()"
+        [attr.aria-expanded]="showFieldFlow()"
+        type="button"
+      >
+        <span class="field-flow-title">
+          Field Flow — bills-api → BFF → Consumer
+          <span class="field-flow-filter-badge">{{ activeFilterLabel() }}</span>
+        </span>
+        <span class="field-flow-chevron" [class.expanded]="showFieldFlow()">›</span>
+      </button>
+
+      @if (showFieldFlow()) {
+        <div class="field-flow-body">
+          <div class="field-flow-callout">
+            <strong>web-bff :3001</strong> is a pass-through for this list — all 12 fields reach the MFE.
+            The MFE template <em>chooses</em> which 6 to render.
+            <strong>partner-bff :3002</strong> is where real BFF field reduction happens — it deliberately strips to 5 fields for B2B partners.
+          </div>
+          <table class="field-map-table">
+            <thead>
+              <tr>
+                <th>Field</th>
+                <th>Type</th>
+                <th class="center">bills-api</th>
+                <th class="center">web-bff :3001</th>
+                <th class="center">MFE renders</th>
+                <th class="center">partner-bff :3002</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (row of fieldMap; track row.field) {
+                <tr>
+                  <td class="field-name">{{ row.field }}</td>
+                  <td class="field-type">{{ row.type }}</td>
+                  <td class="center"><span class="check-yes">✓</span></td>
+                  <td class="center"><span class="check-pass">→ pass</span></td>
+                  <td class="center">
+                    @if (row.shownInList) {
+                      <span class="check-yes">✓</span>
+                    } @else {
+                      <span class="check-no">—</span>
+                    }
+                  </td>
+                  <td class="center">
+                    @if (row.partnerBffReturns) {
+                      <span class="check-partner">✓</span>
+                    } @else {
+                      <span class="check-stripped">stripped</span>
+                    }
+                  </td>
+                  <td class="field-note">{{ row.note }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          <p class="field-flow-footnote">
+            Detail view (<code>GET /api/bills/:id</code>) adds <code>lineItems</code> and
+            <code>payments</code> aggregated from payments-api — the BFF <em>expands</em> the payload there.
+          </p>
+        </div>
+      }
+    </div>
+
     @if (bills.isLoading()) {
       <div class="loading-skeleton">
         <div class="skeleton-row"></div>

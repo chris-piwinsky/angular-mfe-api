@@ -3,7 +3,6 @@ import {
   signal,
   computed,
   inject,
-  OnInit,
   isDevMode,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -60,7 +59,7 @@ interface BillDetailResponse {
 })
 // Emulated encapsulation (default) — Angular auto-scopes all styles to this component.
 // Do NOT change to ViewEncapsulation.None — unscoped styles bleed into the shell and sibling MFEs.
-export class AppComponent implements OnInit {
+export class AppComponent {
   private readonly config = inject(APP_CONFIG);
 
   private logArch(action: string, detail: Record<string, unknown> = {}): void {
@@ -112,7 +111,36 @@ export class AppComponent implements OnInit {
     { label: 'Paid', value: 'paid' },
   ];
 
-  ngOnInit(): void {}
+  readonly fieldMap: Array<{
+    field: string;
+    type: string;
+    shownInList: boolean;
+    partnerBffReturns: boolean;
+    note: string;
+  }> = [
+    { field: 'id',            type: 'string',     shownInList: false, partnerBffReturns: true,  note: 'Renamed to "billId" by partner-bff' },
+    { field: 'accountId',     type: 'string',     shownInList: false, partnerBffReturns: true,  note: '' },
+    { field: 'invoiceNumber', type: 'string',     shownInList: true,  partnerBffReturns: false, note: '' },
+    { field: 'billingPeriod', type: 'object',     shownInList: true,  partnerBffReturns: false, note: 'start + end both rendered' },
+    { field: 'issuedDate',    type: 'string',     shownInList: false, partnerBffReturns: false, note: '' },
+    { field: 'dueDate',       type: 'string',     shownInList: true,  partnerBffReturns: true,  note: '' },
+    { field: 'totalAmount',   type: 'number',     shownInList: true,  partnerBffReturns: false, note: '' },
+    { field: 'amountPaid',    type: 'number',     shownInList: false, partnerBffReturns: false, note: '' },
+    { field: 'balance',       type: 'number',     shownInList: true,  partnerBffReturns: true,  note: 'Computed: totalAmount − amountPaid' },
+    { field: 'status',        type: 'string',     shownInList: true,  partnerBffReturns: true,  note: 'Drives filter tabs' },
+    { field: 'lineItems',     type: 'LineItem[]', shownInList: false, partnerBffReturns: false, note: 'Detail view only' },
+    { field: 'requestId',     type: 'string',     shownInList: false, partnerBffReturns: false, note: 'Correlation ID (observability)' },
+  ];
+
+  showFieldFlow = signal(false);
+
+  readonly activeFilterLabel = computed(
+    () => this.filters.find(f => f.value === this.statusFilter())?.label ?? 'All'
+  );
+
+  toggleFieldFlow(): void {
+    this.showFieldFlow.update(v => !v);
+  }
 
   setFilter(value: string): void {
     this.statusFilter.set(value);

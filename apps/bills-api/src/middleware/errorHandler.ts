@@ -7,7 +7,7 @@ export function errorHandler(
   res: Response,
   _next: NextFunction,
 ): void {
-  const requestId = randomUUID();
+  const requestId = (res.locals['correlationId'] as string) ?? randomUUID();
   console.error(
     JSON.stringify({
       event: 'unhandled_error',

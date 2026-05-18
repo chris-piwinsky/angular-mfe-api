@@ -34,7 +34,8 @@ paymentsRouter.post('/', (req: Request, res: Response) => {
 
   if (
     !body.billId ||
-    body.amount == null ||
+    body.amount === undefined ||
+    body.amount === null ||
     !body.method ||
     !body.maskedAccount
   ) {

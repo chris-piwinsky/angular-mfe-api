@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { Router } from '@angular/router';
 import { RouterModule } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { APP_CONFIG } from './app-config.token';
 import { ArchitectureInsightsService } from './arch-insights/architecture-insights.service';
 import { ArchitectureInsightsComponent } from './arch-insights/architecture-insights.component';

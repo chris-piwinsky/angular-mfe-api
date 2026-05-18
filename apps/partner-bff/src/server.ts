@@ -5,5 +5,7 @@ const PORT = process.env['PORT'] || 3002;
 const app = createApp();
 
 app.listen(PORT, () => {
-  console.log(`partner-bff listening on :${PORT}`);
+  process.stdout.write(
+    JSON.stringify({ event: 'server_started', service: 'partner-bff', port: PORT }) + '\n',
+  );
 });
