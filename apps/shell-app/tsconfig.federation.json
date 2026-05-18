@@ -5,8 +5,7 @@
     "types": []
   },
   "include": [
-    "src/**/*.ts",
-    "../../libs/shared/app-config/src/index.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "src/**/*.spec.ts",

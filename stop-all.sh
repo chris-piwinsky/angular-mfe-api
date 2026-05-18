@@ -74,6 +74,16 @@ else
   echo "ℹ️  No services were running"
 fi
 
+# Kill any lingering Nx build/watch processes for this project (tsc watchers,
+# esbuild, mid-startup processes, etc.) that don't hold a listening port and
+# would otherwise grab task locks on the next start-all run.
+echo ""
+echo "🔧 Killing lingering Nx build processes..."
+pkill -f "billing-portal.*nx" 2>/dev/null || true
+pkill -f "nx.*serve.*(bills-api|payments-api|web-bff|partner-bff|bills-mfe|payment-mfe|shell-app)" 2>/dev/null || true
+sleep 0.5
+echo "   ✅ Done"
+
 # Stop the Nx daemon so task locks don't bleed into the next start-all run
 echo ""
 echo "🔧 Stopping Nx daemon..."

@@ -25,6 +25,9 @@ echo "🚀 Starting Billing Portal services..."
 # Stop any stale Nx daemon from a previous run (clears task locks left by Ctrl+C)
 npx nx daemon --stop 2>/dev/null || true
 
+# Pre-warm the daemon so all services find it ready on first use (avoids race condition)
+npx nx daemon --start 2>/dev/null || true
+
 action_ports=(4001 4002 3001 3002 4201 4202 4200)
 for port in "${action_ports[@]}"; do
   if lsof -ti :"$port" >/dev/null 2>&1; then
