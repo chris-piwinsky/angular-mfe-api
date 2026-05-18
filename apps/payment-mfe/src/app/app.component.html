@@ -77,7 +77,7 @@
           id="amount"
           type="number"
           [value]="amount()"
-          (input)="onAmountChange(($event.target as HTMLInputElement).value)"
+          (input)="onAmountChange($any($event.target).value)"
           (blur)="amountTouched.set(true)"
           [attr.max]="b.balance"
           min="0.01"

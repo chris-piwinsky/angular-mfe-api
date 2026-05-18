@@ -8,6 +8,35 @@ Two surfaces (web UI and B2B partner integration) → Two BFFs → Same domain A
 
 ---
 
+## Demo Credentials
+
+No setup required — credentials are hardcoded for demo purposes.
+
+| Service | Header | Value |
+|---|---|---|
+| `partner-bff` (:3002) | `X-Partner-Key` | `demo-partner-key` |
+| `web-bff` (:3001) | `Authorization` | `Bearer demo-token` |
+
+**How it works:** `apikey.middleware.ts` compares `req.header('X-Partner-Key')` against the literal string `demo-partner-key`. Any other value (or a missing header) returns `401 Unauthorized`.
+
+In a production system this would be replaced with a secrets manager lookup (e.g. AWS Secrets Manager, Vault) and the key value stored in an environment variable — never hardcoded.
+
+---
+
+## Visual Demo (Non-Technical Audience)
+
+**For stakeholders:** Open **[http://localhost:3002/demo.html](http://localhost:3002/demo.html)** after running `./start-all.sh`.
+
+The demo page shows side-by-side comparisons of web-bff vs partner-bff responses in an interactive browser UI:
+
+- **📄 Get Bill Detail** — Compare full 12-field response (web-bff) vs 5-field response (partner-bff)
+- **💳 Submit Payment** — See 201 Created (web-bff) vs 202 Accepted (partner-bff)
+- **⚠️ Test Balance Validation** — Both BFFs enforce the same rule independently
+
+**Why CORS is enabled:** Production partner-bff would be server-to-server only (no CORS). For this reference app, CORS is enabled via `ENABLE_DEMO_CORS=true` so the HTML page can demonstrate the differences visually. The code includes prominent warnings that this is demo infrastructure only.
+
+---
+
 ## Implementation Summary
 
 **Created:**

@@ -73,3 +73,9 @@ if [ $stopped -gt 0 ]; then
 else
   echo "ℹ️  No services were running"
 fi
+
+# Stop the Nx daemon so task locks don't bleed into the next start-all run
+echo ""
+echo "🔧 Stopping Nx daemon..."
+npx nx daemon --stop 2>/dev/null || true
+echo "   ✅ Nx daemon stopped"

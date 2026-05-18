@@ -1,9 +1,16 @@
 import express, { Application } from 'express';
+import cors from 'cors';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import { existsSync } from 'fs';
 import { correlationMiddleware } from './middleware/correlation.middleware.js';
 import { apikeyMiddleware } from './middleware/apikey.middleware.js';
 import { requestLogger } from './middleware/requestLogger.js';
 import billsRouter from './routes/bills.routes.js';
 import paymentsRouter from './routes/payments.routes.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 export function createApp(): Application {
   const app = express();
@@ -29,8 +36,24 @@ export function createApp(): Application {
   app.use('/partner', billsRouter);
   app.use('/partner', paymentsRouter);
 
-  // Note: NO CORS middleware — partner-bff serves server-to-server B2B consumers, not browsers
-  // Adding CORS here would be incorrect and misleading
+  // ⚠️ DEMO-ONLY: CORS + static file serving for visual demo page
+  // Production partner-bff would NOT have CORS (server-to-server only)
+  // This is infrastructure to demonstrate A2 to non-technical stakeholders
+  if (process.env['ENABLE_DEMO_CORS'] === 'true') {
+    app.use(
+      cors({
+        origin: ['http://localhost:3002', 'http://localhost:3001'],
+        credentials: true,
+      }),
+    );
+  }
+
+  // Serve static demo page at http://localhost:3002/demo.html
+  // In dev mode (nx serve), serve from source; in production, serve from dist
+  const publicDistPath = join(__dirname, 'public');
+  const publicSrcPath = join(__dirname, '..', '..', '..', 'apps', 'partner-bff', 'src', 'public');
+  const publicPath = existsSync(publicDistPath) ? publicDistPath : publicSrcPath;
+  app.use(express.static(publicPath));
 
   return app;
 }

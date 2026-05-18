@@ -15,7 +15,7 @@
         "bundle": false,
         "main": "apps/partner-bff/src/server.ts",
         "tsConfig": "apps/partner-bff/tsconfig.app.json",
-        "assets": ["apps/partner-bff/src/assets"],
+        "assets": ["apps/partner-bff/src/assets", "apps/partner-bff/src/public"],
         "generatePackageJson": true,
         "esbuildOptions": {
           "sourcemap": true,

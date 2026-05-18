@@ -9,7 +9,17 @@ import { paymentsRouter } from './routes/payments';
 export function createApp(): Application {
   const app = express();
 
-  app.use(cors({ origin: process.env.CORS_ORIGIN ?? 'http://localhost:4200' }));
+  // Allow shell-app (4200) and partner-bff demo page (3002)
+  const allowedOrigins = ['http://localhost:4200', 'http://localhost:3002'];
+  app.use(cors({ 
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  }));
   app.use(express.json());
   app.use(correlationIdMiddleware);
   app.use(requestLogger);

@@ -22,6 +22,9 @@ start_service() {
 
 echo "🚀 Starting Billing Portal services..."
 
+# Stop any stale Nx daemon from a previous run (clears task locks left by Ctrl+C)
+npx nx daemon --stop 2>/dev/null || true
+
 action_ports=(4001 4002 3001 3002 4201 4202 4200)
 for port in "${action_ports[@]}"; do
   if lsof -ti :"$port" >/dev/null 2>&1; then
@@ -32,7 +35,7 @@ done
 start_service "bills-api" "PORT=4001 npx nx serve bills-api --output-style=stream"
 start_service "payments-api" "PORT=4002 npx nx serve payments-api --output-style=stream"
 start_service "web-bff" "PORT=3001 npx nx serve web-bff --output-style=stream"
-start_service "partner-bff" "PORT=3002 BILLS_API_URL=http://localhost:4001 PAYMENTS_API_URL=http://localhost:4002 npx nx serve partner-bff --output-style=stream"
+start_service "partner-bff" "PORT=3002 ENABLE_DEMO_CORS=true BILLS_API_URL=http://localhost:4001 PAYMENTS_API_URL=http://localhost:4002 npx nx serve partner-bff --output-style=stream"
 start_service "bills-mfe" "PORT=4201 npx nx serve bills-mfe --output-style=stream"
 start_service "payment-mfe" "PORT=4202 npx nx serve payment-mfe --output-style=stream"
 start_service "shell-app" "npx nx serve shell-app --output-style=stream"
