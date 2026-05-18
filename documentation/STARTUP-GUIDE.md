@@ -158,13 +158,14 @@ Force stop all known app ports:
 ./stop-all.sh
 ```
 
-This script clears ports 4001, 4002, 3001, 3002, 4200, 4201, and 4202.
+This script clears ports 4001, 4002, 3001, 3002, 4200, 4201, and 4202, kills lingering Nx build/watch processes for this project, and stops the Nx daemon.
 
 Use it if:
 
 - Ctrl+C did not stop everything
 - You see port already in use errors
 - You suspect orphaned processes from a previous run
+- Services fail to start after a previous incomplete shutdown
 
 ## Troubleshooting
 
@@ -177,6 +178,20 @@ Fix:
 ```bash
 ./stop-all.sh
 ./start-all.sh
+```
+
+### Node Services Fail to Start (MFEs Come Up, APIs Do Not)
+
+Symptom: bills-api, payments-api, web-bff, or partner-bff show `HTTP 000000` in the health check while Angular MFEs start fine.
+
+Cause: A previous incomplete shutdown left Nx task locks or a corrupt daemon state. Multiple competing `nx serve` processes race for the same locks and all lose.
+
+Fix:
+
+```bash
+./stop-all.sh     # kills port-bound AND lingering Nx build processes
+npx nx reset      # clears task locks and daemon state
+./start-all.sh    # start-all.sh pre-warms the daemon before spawning services
 ```
 
 ### Service Appears Up but Flow Fails
